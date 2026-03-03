@@ -59,4 +59,7 @@ public class Student {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "student")
+    private UserAccount userAccount;
 }

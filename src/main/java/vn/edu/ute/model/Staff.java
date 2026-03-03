@@ -49,4 +49,7 @@ public class Staff {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "staff")
+    private UserAccount userAccount;
 }
