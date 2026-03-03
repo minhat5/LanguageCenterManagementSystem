@@ -6,8 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import vn.edu.ute.enumeration.EnrollmentStatus;
-import vn.edu.ute.enumeration.Result;
+import vn.edu.ute.common.enumeration.EnrollmentStatus;
+import vn.edu.ute.common.enumeration.Result;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
