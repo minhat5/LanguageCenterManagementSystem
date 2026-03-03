@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import vn.edu.ute.enumeration.InvoiceStatus;
+import vn.edu.ute.common.enumeration.InvoiceStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

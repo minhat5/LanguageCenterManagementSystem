@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import vn.edu.ute.enumeration.PaymentStatus;
+import vn.edu.ute.common.enumeration.PaymentStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

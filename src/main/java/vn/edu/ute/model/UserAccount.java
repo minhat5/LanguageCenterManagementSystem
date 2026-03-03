@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import vn.edu.ute.enumeration.Role;
+import vn.edu.ute.common.enumeration.Role;
 
 import java.time.LocalDateTime;
 
