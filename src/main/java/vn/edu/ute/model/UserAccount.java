@@ -31,16 +31,16 @@ public class UserAccount {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "teacher_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "teacher_id", unique=true)
     private Teacher teacher;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "student_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id", unique=true)
     private Student student;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "staff_id")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "staff_id", unique=true)
     private Staff staff;
 
     @Column(name = "is_active", nullable = false)
