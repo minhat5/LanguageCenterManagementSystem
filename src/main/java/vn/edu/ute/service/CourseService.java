@@ -4,17 +4,15 @@ import vn.edu.ute.common.enumeration.Level;
 import vn.edu.ute.common.enumeration.Status;
 import vn.edu.ute.db.TransactionManager;
 import vn.edu.ute.model.Course;
-import vn.edu.ute.repo.CourseRepository;
+import vn.edu.ute.repo.CourseRepo;
 
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class CourseService {
-    private final CourseRepository courseRepository;
+    private final CourseRepo courseRepository;
     private final TransactionManager tx;
 
-    public CourseService(CourseRepository courseRepository, TransactionManager tx) {
+    public CourseService(CourseRepo courseRepository, TransactionManager tx) {
         this.courseRepository = courseRepository;
         this.tx = tx;
     }

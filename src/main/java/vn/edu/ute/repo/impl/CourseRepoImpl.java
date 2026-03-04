@@ -2,11 +2,11 @@ package vn.edu.ute.repo.impl;
 
 import jakarta.persistence.EntityManager;
 import vn.edu.ute.model.Course;
-import vn.edu.ute.repo.CourseRepository;
+import vn.edu.ute.repo.CourseRepo;
 
 import java.util.List;
 
-public class CourseRepositoryImpl implements CourseRepository {
+public class CourseRepoImpl implements CourseRepo {
     @Override
     public List<Course> findAll(EntityManager em) {
         return em.createQuery("select c from Course c", Course.class).getResultList();

@@ -5,7 +5,7 @@ import vn.edu.ute.model.Course;
 
 import java.util.List;
 
-public interface CourseRepository {
+public interface CourseRepo {
     //Lấy tất cả khoá học
     List<Course> findAll(EntityManager em);
     //Thêm khoá học mới
