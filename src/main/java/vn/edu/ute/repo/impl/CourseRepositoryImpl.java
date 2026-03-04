@@ -24,9 +24,10 @@ public class CourseRepositoryImpl implements CourseRepository {
 
     @Override
     public void delete(EntityManager em, Long id) {
+        //Kiểm tra xem khoá học có tồn tại không trước khi xoá
         Course course = em.find(Course.class, id);
         if(course == null) {
-            throw new IllegalArgumentException("Course with id " + id + " not found");
+            throw new IllegalArgumentException("Không tìm thấy khoá học với mã khoá học " + id);
         }
         em.remove(course);
     }

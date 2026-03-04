@@ -27,6 +27,7 @@ public class Notification {
     private String content;
 
     @Column(name = "target_role", nullable = false)
+    @Enumerated(EnumType.STRING)
     private TargetRole targetRole;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -55,4 +55,15 @@ public class Course {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    public Course(Long courseId, String courseName, String description, Level level, Integer duration, DurationUnit durationUnit, BigDecimal fee, Status status) {
+        this.courseId = courseId;
+        this.courseName = courseName;
+        this.description = description;
+        this.level = level;
+        this.duration = duration;
+        this.durationUnit = durationUnit;
+        this.fee = fee;
+        this.status = status;
+    }
 }
