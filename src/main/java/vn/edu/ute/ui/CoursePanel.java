@@ -4,15 +4,19 @@ import vn.edu.ute.common.enumeration.Level;
 import vn.edu.ute.common.enumeration.Status;
 import vn.edu.ute.model.Course;
 import vn.edu.ute.service.CourseService;
+import vn.edu.ute.ui.common.ButtonRenderer;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import java.awt.*;
-import java.util.ArrayList;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.function.Consumer;
 
-public class CourseFrame extends JFrame {
+public class CoursePanel extends JPanel {
     private final CourseService courseService;
 
     private final CourseTableModel tableModel = new CourseTableModel();
@@ -25,16 +29,13 @@ public class CourseFrame extends JFrame {
     private Course selectedCourse = null;
     private List<Course> courses;
 
-    public CourseFrame(CourseService courseService) {
-        super("Khoá học");
-        this.courseService = courseService;
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    private final Consumer<Course> onCreateClassClick;
 
+    public CoursePanel(CourseService courseService, Consumer<Course> onCreateClassClick) {
+        this.courseService = courseService;
+        this.onCreateClassClick = onCreateClassClick;
         buildUI();
         loadComboBoxes();
-
-        setSize(920, 540);
-        setLocationRelativeTo(null);
     }
 
     private void buildUI() {
@@ -48,17 +49,17 @@ public class CourseFrame extends JFrame {
         JTextField searchField = new JTextField(25);
         searchField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
-            public void insertUpdate(javax.swing.event.DocumentEvent e) {
+            public void insertUpdate(DocumentEvent e) {
                 performSearch();
             }
 
             @Override
-            public void removeUpdate(javax.swing.event.DocumentEvent e) {
+            public void removeUpdate(DocumentEvent e) {
                 performSearch();
             }
 
             @Override
-            public void changedUpdate(javax.swing.event.DocumentEvent e) {
+            public void changedUpdate(DocumentEvent e) {
                 performSearch();
             }
 
@@ -99,6 +100,20 @@ public class CourseFrame extends JFrame {
         right.add(btnRefresh);
         top.add(right, BorderLayout.EAST);
 
+        table.getColumnModel().getColumn(table.getColumnCount() - 1).setCellRenderer(new ButtonRenderer());
+        table.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                int row = table.rowAtPoint(e.getPoint());
+                int col = table.columnAtPoint(e.getPoint());
+                if (col == table.getColumnCount() - 1 && row >= 0) {
+                    Course selected = tableModel.getAt(row);
+                    if(onCreateClassClick != null && selected != null) {
+                        onCreateClassClick.accept(selected);
+                    }
+                }
+            }
+        });
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.getSelectionModel().addListSelectionListener(this::onRowSelected);
         JScrollPane scroll = new JScrollPane(table);
@@ -115,7 +130,8 @@ public class CourseFrame extends JFrame {
         root.add(scroll, BorderLayout.CENTER);
         root.add(bottom, BorderLayout.SOUTH);
 
-        setContentPane(root);
+        this.setLayout(new BorderLayout());
+        this.add(root, BorderLayout.CENTER);
     }
 
     private void loadComboBoxes() {
@@ -172,7 +188,8 @@ public class CourseFrame extends JFrame {
     }
 
     private void onAdd() {
-        CourseFormDialog dlg = new CourseFormDialog(this, "Thêm khoá học", null);
+        Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);
+        CourseFormDialog dlg = new CourseFormDialog(parent, "Thêm khoá học", null);
         dlg.setVisible(true);
         if (!dlg.isSaved()) {
             return;
@@ -203,8 +220,8 @@ public class CourseFrame extends JFrame {
                 selectedCourse.getFee(),
                 selectedCourse.getStatus()
         );
-
-        CourseFormDialog dlg = new CourseFormDialog(this, "Cập nhật khoá học", editCourse);
+        Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);
+        CourseFormDialog dlg = new CourseFormDialog(parent, "Cập nhật khoá học", editCourse);
         dlg.setVisible(true);
         if (!dlg.isSaved()) {
             return;

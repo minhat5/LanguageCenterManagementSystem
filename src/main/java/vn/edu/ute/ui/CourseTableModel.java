@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CourseTableModel extends AbstractTableModel {
-    private final String[] columns = {"Mã khoá học", "Tên khoá học", "Mô tả", "Level", "Thời lượng", "Đơn vị", "Giá", "Trạng thái", "Thời điểm tạo", "Thời điểm chỉnh sửa"};
+    private final String[] columns = {"Mã khoá học", "Tên khoá học", "Mô tả", "Level", "Thời lượng", "Đơn vị", "Giá", "Trạng thái", "Thời điểm tạo", "Thời điểm chỉnh sửa", ""};
     private List<Course> data = new ArrayList<>();
 
     public void setData(List<Course> data) {
@@ -50,6 +50,7 @@ public class CourseTableModel extends AbstractTableModel {
             case 7: return course.getStatus();
             case 8: return course.getCreatedAt();
             case 9: return course.getUpdatedAt();
+            case 10: return "Tạo lớp học";
             default: return "";
         }
     }

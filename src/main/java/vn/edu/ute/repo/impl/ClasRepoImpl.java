@@ -9,7 +9,12 @@ import java.util.List;
 public class ClasRepoImpl implements ClasRepo {
     @Override
     public List<Clas> findAll(EntityManager em) {
-        return em.createQuery("select c from Clas c").getResultList();
+        String jpql = "SELECT c FROM Clas c " +
+                "LEFT JOIN FETCH c.course " +
+                "LEFT JOIN FETCH c.teacher " +
+                "LEFT JOIN FETCH c.branch " +
+                "LEFT JOIN FETCH c.room";
+        return em.createQuery(jpql, Clas.class).getResultList();
     }
 
     @Override
