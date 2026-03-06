@@ -63,11 +63,11 @@ public class CourseFormDialog extends JDialog {
 
         int r = 0;
 
-        g.gridx = 0; g.gridy = r; form.add(new JLabel("Course Name:"), g);
+        g.gridx = 0; g.gridy = r; form.add(new JLabel("Tên khoá học:"), g);
         g.gridx = 1; form.add(txtCourseName, g);
 
         r++;
-        g.gridx = 0; g.gridy = r; g.anchor = GridBagConstraints.NORTHWEST; form.add(new JLabel("Description:"), g);
+        g.gridx = 0; g.gridy = r; g.anchor = GridBagConstraints.NORTHWEST; form.add(new JLabel("Mô tả:"), g);
         g.gridx = 1;
         JScrollPane scrollDesc = new JScrollPane(txtDescription);
         scrollDesc.setPreferredSize(new Dimension(280, 80));
@@ -75,11 +75,11 @@ public class CourseFormDialog extends JDialog {
         g.anchor = GridBagConstraints.WEST;
 
         r++;
-        g.gridx = 0; g.gridy = r; form.add(new JLabel("Level:"), g);
+        g.gridx = 0; g.gridy = r; form.add(new JLabel("Cấp độ:"), g);
         g.gridx = 1; form.add(cboLevel, g);
 
         r++;
-        g.gridx = 0; g.gridy = r; form.add(new JLabel("Duration:"), g);
+        g.gridx = 0; g.gridy = r; form.add(new JLabel("Thời gian:"), g);
         JPanel durationPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 0, 0));
         durationPanel.add(txtDuration);
         durationPanel.add(Box.createHorizontalStrut(5));
@@ -87,15 +87,15 @@ public class CourseFormDialog extends JDialog {
         g.gridx = 1; form.add(durationPanel, g);
 
         r++;
-        g.gridx = 0; g.gridy = r; form.add(new JLabel("Fee:"), g);
+        g.gridx = 0; g.gridy = r; form.add(new JLabel("Chi phí:"), g);
         g.gridx = 1; form.add(txtFee, g);
 
         r++;
-        g.gridx = 0; g.gridy = r; form.add(new JLabel("Status:"), g);
+        g.gridx = 0; g.gridy = r; form.add(new JLabel("Trạng thái:"), g);
         g.gridx = 1; form.add(cboStatus, g);
 
-        JButton btnSave = new JButton("Save");
-        JButton btnCancel = new JButton("Cancel");
+        JButton btnSave = new JButton("Lưu");
+        JButton btnCancel = new JButton("Huỷ");
 
         btnSave.addActionListener(e -> onSave());
         btnCancel.addActionListener(e -> dispose());
@@ -112,7 +112,7 @@ public class CourseFormDialog extends JDialog {
     private void onSave() {
         try {
             String name = txtCourseName.getText().trim();
-            if (name.isEmpty()) throw new IllegalArgumentException("Course Name is required.");
+            if (name.isEmpty()) throw new IllegalArgumentException("Tên khoá học không được để trống.");
 
             String description = txtDescription.getText().trim();
 
@@ -121,9 +121,9 @@ public class CourseFormDialog extends JDialog {
             int duration;
             try {
                 duration = Integer.parseInt(txtDuration.getText().trim());
-                if (duration <= 0) throw new IllegalArgumentException("Duration must be > 0.");
+                if (duration <= 0) throw new IllegalArgumentException("Thời gian phải > 0.");
             } catch (NumberFormatException ex) {
-                throw new IllegalArgumentException("Duration must be a valid integer.");
+                throw new IllegalArgumentException("Thời gian phải là số nguyên dương hợp lệ.");
             }
 
             DurationUnit unit = (DurationUnit) cboDurationUnit.getSelectedItem();
@@ -132,10 +132,10 @@ public class CourseFormDialog extends JDialog {
             try {
                 fee = new BigDecimal(txtFee.getText().trim());
                 if (fee.compareTo(BigDecimal.ZERO) < 0) {
-                    throw new IllegalArgumentException("Fee must be >= 0.");
+                    throw new IllegalArgumentException("Chi phí phải >= 0.");
                 }
             } catch (NumberFormatException ex) {
-                throw new IllegalArgumentException("Fee must be a valid number.");
+                throw new IllegalArgumentException("Chi phí phải là số hợp lệ.");
             }
 
             Status status = (Status) cboStatus.getSelectedItem();
@@ -151,7 +151,7 @@ public class CourseFormDialog extends JDialog {
             saved = true;
             dispose();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Validation Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
     }
 

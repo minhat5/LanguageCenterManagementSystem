@@ -87,43 +87,43 @@ public class ClasFormDialog extends JDialog {
 
         int r = 0;
 
-        g.gridx = 0; g.gridy = r; form.add(new JLabel("Class Name:"), g);
+        g.gridx = 0; g.gridy = r; form.add(new JLabel("Tên lớp:"), g);
         g.gridx = 1; form.add(txtClassName, g);
 
         r++;
-        g.gridx = 0; g.gridy = r; form.add(new JLabel("Course:"), g);
+        g.gridx = 0; g.gridy = r; form.add(new JLabel("Khoá học:"), g);
         g.gridx = 1; form.add(cboCourse, g);
 
         r++;
-        g.gridx = 0; g.gridy = r; form.add(new JLabel("Teacher:"), g);
+        g.gridx = 0; g.gridy = r; form.add(new JLabel("Giáo viên:"), g);
         g.gridx = 1; form.add(cboTeacher, g);
 
         r++;
-        g.gridx = 0; g.gridy = r; form.add(new JLabel("Branch:"), g);
+        g.gridx = 0; g.gridy = r; form.add(new JLabel("Chi nhánh:"), g);
         g.gridx = 1; form.add(cboBranch, g);
 
         r++;
-        g.gridx = 0; g.gridy = r; form.add(new JLabel("Room:"), g);
+        g.gridx = 0; g.gridy = r; form.add(new JLabel("Phòng:"), g);
         g.gridx = 1; form.add(cboRoom, g);
 
         r++;
-        g.gridx = 0; g.gridy = r; form.add(new JLabel("Start Date:"), g);
+        g.gridx = 0; g.gridy = r; form.add(new JLabel("Ngày bắt đầu:"), g);
         g.gridx = 1; form.add(dateStart, g);
 
         r++;
-        g.gridx = 0; g.gridy = r; form.add(new JLabel("End Date:"), g);
+        g.gridx = 0; g.gridy = r; form.add(new JLabel("Ngày kết thúc:"), g);
         g.gridx = 1; form.add(dateEnd, g);
 
         r++;
-        g.gridx = 0; g.gridy = r; form.add(new JLabel("Max Students:"), g);
+        g.gridx = 0; g.gridy = r; form.add(new JLabel("Sĩ số tối đa:"), g);
         g.gridx = 1; form.add(txtMaxStudent, g);
 
         r++;
-        g.gridx = 0; g.gridy = r; form.add(new JLabel("Status:"), g);
+        g.gridx = 0; g.gridy = r; form.add(new JLabel("Trạng thái:"), g);
         g.gridx = 1; form.add(cboStatus, g);
 
-        JButton btnSave = new JButton("Save");
-        JButton btnCancel = new JButton("Cancel");
+        JButton btnSave = new JButton("Lưu");
+        JButton btnCancel = new JButton("Huỷ");
         btnSave.addActionListener(e -> onSave());
         btnCancel.addActionListener(e -> dispose());
 
@@ -141,22 +141,22 @@ public class ClasFormDialog extends JDialog {
         try {
             String className = txtClassName.getText().trim();
             if (className.isEmpty()) {
-                throw new IllegalArgumentException("Class Name cannot be empty.");
+                throw new IllegalArgumentException("Tên lớp không được để trống.");
             }
 
             if (dateStart.getDate() == null) {
-                throw new IllegalArgumentException("Start Date is required.");
+                throw new IllegalArgumentException("Ngày bắt đầu không được để trống.");
             }
             if (dateEnd.getDate() != null && dateEnd.getDate().isBefore(dateStart.getDate())) {
-                throw new IllegalArgumentException("End Date must be after Start Date.");
+                throw new IllegalArgumentException("Ngày kết thúc phải sau ngày bắt đầu.");
             }
 
             int maxStudent;
             try {
                 maxStudent = Integer.parseInt(txtMaxStudent.getText().trim());
-                if (maxStudent <= 0) throw new IllegalArgumentException("Max students must be > 0.");
+                if (maxStudent <= 0) throw new IllegalArgumentException("Sĩ số tối đa phải > 0.");
             } catch (NumberFormatException ex) {
-                throw new IllegalArgumentException("Max students must be a valid number.");
+                throw new IllegalArgumentException("Sĩ số tối đa phải là số hợp lệ.");
             }
 
             clas.setClassName(className);
