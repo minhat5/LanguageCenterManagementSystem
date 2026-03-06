@@ -3,6 +3,7 @@ package vn.edu.ute.ui;
 import com.github.lgooddatepicker.components.DatePicker;
 import vn.edu.ute.common.enumeration.ClassStatus;
 import vn.edu.ute.model.*;
+import vn.edu.ute.service.RoomService;
 import vn.edu.ute.util.UIUtils;
 
 import javax.swing.*;
@@ -19,16 +20,26 @@ public class ClasFormDialog extends JDialog {
     private final DatePicker dateEnd = new DatePicker();
     private final JTextField txtMaxStudent = new JTextField(10);
     private final JComboBox<ClassStatus> cboStatus = new JComboBox<>();
+    private final List<Course> courses;
+    private final List<Teacher> teachers;
+    private final List<Branch> branches;
+    private final List<Room> rooms;
+    private final RoomService roomService;
 
     private boolean saved = false;
     private Clas clas;
 
-    public ClasFormDialog(Frame owner, String title, Clas existing, List<Course> courses, List<Teacher> teachers, List<Branch> branches, List<Room> rooms) {
+    public ClasFormDialog(Frame owner, String title, Clas existing, List<Course> courses, List<Teacher> teachers, List<Branch> branches, List<Room> rooms, RoomService roomService) {
         super(owner, title, true);
 
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        loadComboBoxes(courses, teachers, branches, rooms);
+        this.courses = courses;
+        this.teachers = teachers;
+        this.branches = branches;
+        this.rooms = rooms;
+        this.roomService = roomService;
         buildUI();
+        loadComboBoxes();
         if(existing != null) {
             this.clas = existing;
             txtClassName.setText(existing.getClassName());
@@ -48,7 +59,7 @@ public class ClasFormDialog extends JDialog {
         setLocationRelativeTo(owner);
     }
 
-    private void loadComboBoxes(List<Course> courses, List<Teacher> teachers, List<Branch> branches, List<Room> rooms) {
+    private void loadComboBoxes() {
         try {
             for (Course course : courses) {
                 cboCourse.addItem(course);
@@ -62,10 +73,6 @@ public class ClasFormDialog extends JDialog {
                 cboBranch.addItem(branch);
             }
 
-            for (Room room : rooms) {
-                cboRoom.addItem(room);
-            }
-
             for (ClassStatus status : ClassStatus.values()) {
                 cboStatus.addItem(status);
             }
@@ -76,6 +83,17 @@ public class ClasFormDialog extends JDialog {
         UIUtils.setComboBoxRenderer(cboTeacher, Teacher::getFullName);
         UIUtils.setComboBoxRenderer(cboBranch, Branch::getBranchName);
         UIUtils.setComboBoxRenderer(cboRoom, Room::getRoomName);
+    }
+
+    private void loadRoomsByBranch() {
+        cboRoom.removeAllItems();
+        Branch selectedBranch = (Branch) cboBranch.getSelectedItem();
+        if (selectedBranch != null) {
+            List<Room> loadedRooms = roomService.getByBranchId(rooms, selectedBranch.getBranchId());
+            for (Room room : loadedRooms) {
+                cboRoom.addItem(room);
+            }
+        }
     }
 
     private void buildUI() {
@@ -101,6 +119,7 @@ public class ClasFormDialog extends JDialog {
         r++;
         g.gridx = 0; g.gridy = r; form.add(new JLabel("Chi nhánh:"), g);
         g.gridx = 1; form.add(cboBranch, g);
+        cboBranch.addActionListener(e -> loadRoomsByBranch());
 
         r++;
         g.gridx = 0; g.gridy = r; form.add(new JLabel("Phòng:"), g);

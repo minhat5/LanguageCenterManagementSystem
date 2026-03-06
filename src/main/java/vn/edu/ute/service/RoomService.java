@@ -18,4 +18,10 @@ public class RoomService {
     public List<Room> getAll() throws Exception {
         return tx.runInTransaction(roomRepo::findAll);
     }
+
+    public List<Room> getByBranchId(List<Room> rooms, Long branchId) {
+        return rooms.stream()
+                .filter(r -> r.getBranch().getBranchId().equals(branchId))
+                .toList();
+    }
 }

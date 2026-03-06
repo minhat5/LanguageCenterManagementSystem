@@ -237,7 +237,7 @@ public class ClasPanel extends JPanel {
         }
 
         Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);
-        ClasFormDialog dlg = new ClasFormDialog(parent, "Thêm lớp học", initClas, cacheCourses, cacheTeachers, cacheBranches, cacheRooms);
+        ClasFormDialog dlg = new ClasFormDialog(parent, "Thêm lớp học", initClas, cacheCourses, cacheTeachers, cacheBranches, cacheRooms, roomService);
         dlg.setVisible(true);
 
         if (!dlg.isSaved()) {
@@ -261,7 +261,7 @@ public class ClasPanel extends JPanel {
         try {
             Clas editClas = clasService.findById(selectedClass.classId());
             Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);
-            ClasFormDialog dlg = new ClasFormDialog(parent, "Cập nhật lớp học", editClas, cacheCourses, cacheTeachers, cacheBranches, cacheRooms);
+            ClasFormDialog dlg = new ClasFormDialog(parent, "Cập nhật lớp học", editClas, cacheCourses, cacheTeachers, cacheBranches, cacheRooms, roomService);
             dlg.setVisible(true);
             if (!dlg.isSaved()) {
                 return;

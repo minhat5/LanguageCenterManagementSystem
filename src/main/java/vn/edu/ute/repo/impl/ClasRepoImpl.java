@@ -38,6 +38,14 @@ public class ClasRepoImpl implements ClasRepo {
 
     @Override
     public Clas findById(EntityManager em, Long id) {
-        return em.find(Clas.class, id);
+        String jpql = "SELECT c FROM Clas c " +
+                "LEFT JOIN FETCH c.course " +
+                "LEFT JOIN FETCH c.teacher " +
+                "LEFT JOIN FETCH c.branch " +
+                "LEFT JOIN FETCH c.room " +
+                "WHERE c.classId = :id";
+        return em.createQuery(jpql, Clas.class)
+                .setParameter("id", id)
+                .getSingleResult();
     }
 }
