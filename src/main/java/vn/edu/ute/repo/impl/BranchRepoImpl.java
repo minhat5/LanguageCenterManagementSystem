@@ -12,9 +12,4 @@ public class BranchRepoImpl implements BranchRepo {
     public List<Branch> findAll(EntityManager em) {
         return em.createQuery("select b from Branch b", Branch.class).getResultList();
     }
-
-    @Override
-    public Branch findById(EntityManager em, int id) {
-        return em.find(Branch.class, id);
-    }
 }

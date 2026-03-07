@@ -1,7 +1,7 @@
 package vn.edu.ute.ui;
 
-import vn.edu.ute.model.Course;
 import vn.edu.ute.service.*;
+
 import javax.swing.*;
 import java.awt.*;
 

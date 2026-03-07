@@ -14,9 +14,4 @@ public class RoomRepoImpl implements RoomRepo {
                 " LEFT JOIN FETCH r.branch";
         return em.createQuery(jpql, Room.class).getResultList();
     }
-
-    @Override
-    public Room findById(EntityManager em, int id) {
-        return em.find(Room.class, id);
-    }
 }

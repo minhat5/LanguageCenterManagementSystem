@@ -6,6 +6,6 @@ import vn.edu.ute.model.Room;
 import java.util.List;
 
 public interface RoomRepo {
+    // Tìm tất cả phòng học
     List<Room> findAll(EntityManager em);
-    Room findById(EntityManager em, int id);
 }

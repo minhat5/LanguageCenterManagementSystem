@@ -6,6 +6,6 @@ import vn.edu.ute.model.Branch;
 import java.util.List;
 
 public interface BranchRepo {
+    // Tìm tất cả chi nhánh
     List<Branch> findAll(EntityManager em);
-    Branch findById(EntityManager em, int id);
 }

@@ -12,9 +12,4 @@ public class TeacherRepoImpl implements TeacherRepo {
     public List<Teacher> findAll(EntityManager em) {
         return em.createQuery("SELECT t FROM Teacher t", Teacher.class).getResultList();
     }
-
-    @Override
-    public Teacher findById(EntityManager em, String id) {
-        return em.find(Teacher.class, id);
-    }
 }
