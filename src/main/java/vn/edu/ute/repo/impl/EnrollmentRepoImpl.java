@@ -8,21 +8,13 @@ import java.util.List;
 
 public class EnrollmentRepoImpl implements EnrollmentRepo {
 
-    public final EntityManager em;
-
-    public EnrollmentRepoImpl(EntityManager em) {
-        this.em = em;
-    }
-
     @Override
-    public void save(Enrollment enrollment) {
-        em.getTransaction().begin();
+    public void save(EntityManager em, Enrollment enrollment) {
         em.persist(enrollment);
-        em.getTransaction().commit();
     }
 
     @Override
-    public List<Enrollment> findAll() {
+    public List<Enrollment> findAll(EntityManager em) {
         return em.createQuery("SELECT e FROM Enrollment e", Enrollment.class).getResultList();
     }
 }

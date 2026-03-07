@@ -1,10 +1,11 @@
 package vn.edu.ute.repo;
 
+import jakarta.persistence.EntityManager;
 import vn.edu.ute.model.Enrollment;
 
 import java.util.List;
 
 public interface EnrollmentRepo {
-    void save(Enrollment enrollment);
-    List<Enrollment> findAll();
+    void save(EntityManager em, Enrollment enrollment);
+    List<Enrollment> findAll(EntityManager em);
 }

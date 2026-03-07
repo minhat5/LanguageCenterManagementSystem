@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
+import vn.edu.ute.enumeration.PaymentMethod;
 import vn.edu.ute.enumeration.PaymentStatus;
 
 import java.math.BigDecimal;
@@ -40,7 +41,8 @@ public class Payment {
     private LocalDateTime paymentDate;
 
     @Column(name = "payment_method", nullable = false)
-    private String paymentMethod;
+    @Enumerated(EnumType.STRING)
+    private PaymentMethod paymentMethod;
 
     @Column(name = "status", nullable = false)
     @Enumerated(EnumType.STRING)
