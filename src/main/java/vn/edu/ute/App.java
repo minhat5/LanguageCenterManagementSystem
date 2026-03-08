@@ -7,6 +7,7 @@ import vn.edu.ute.repo.impl.PlacementTestRepoImpl;
 import vn.edu.ute.repo.impl.StudentRepoImpl;
 import vn.edu.ute.service.impl.EnrollmentServiceImpl;
 import vn.edu.ute.ui.EnrollmentManagerPanel;
+import vn.edu.ute.ui.PlacementTestManagerPanel;
 
 import javax.swing.*;
 
@@ -29,14 +30,20 @@ public class App {
                 );
 
                 // 4. Khởi tạo UI và nhúng Panel
-                EnrollmentManagerPanel enrollmentPanel = new EnrollmentManagerPanel(enrollmentService);
+                PlacementTestManagerPanel testPanel = new PlacementTestManagerPanel(enrollmentService);
+                EnrollmentManagerPanel enrollPanel = new EnrollmentManagerPanel(enrollmentService);
 
                 JFrame frame = new JFrame("Test Module Tuyển Sinh - Mai Hồng Tín");
                 frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                frame.setSize(800, 500);
+                frame.setSize(900, 600);
                 frame.setLocationRelativeTo(null);
-                frame.add(enrollmentPanel);
 
+// Dùng JTabbedPane để chứa 2 màn hình
+                JTabbedPane tabbedPane = new JTabbedPane();
+                tabbedPane.addTab("1. Quản Lý Đánh Giá Năng Lực", testPanel);
+                tabbedPane.addTab("2. Quản Lý Ghi Danh", enrollPanel);
+
+                frame.add(tabbedPane);
                 frame.setVisible(true);
 
             } catch (Exception e) {

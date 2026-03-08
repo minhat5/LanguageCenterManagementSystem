@@ -108,4 +108,55 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             return null;
         });
     }
+    @Override
+    public List<PlacementTest> getAllPlacementTests() throws Exception {
+        return txManager.runInTransaction(em -> {
+            return testRepo.findAll(em);
+        });
+    }
+
+    @Override
+    public void updatePlacementTest(Long testId, BigDecimal newScore, String newNote) throws Exception {
+        txManager.runInTransaction(em -> {
+            PlacementTest test = testRepo.findById(em, testId);
+            if (test == null) throw new Exception("Không tìm thấy bài thi!");
+
+            test.setScore(newScore);
+            test.setNote(newNote);
+
+            // Tính lại Level dựa trên điểm mới
+            Level suggestedLevel = newScore.compareTo(new BigDecimal("5.0")) < 0 ? Level.Beginner :
+                    newScore.compareTo(new BigDecimal("7.5")) <= 0 ? Level.Intermediate : Level.Advanced;
+            test.setSuggestedLevel(suggestedLevel);
+
+            return null;
+        });
+    }
+
+    @Override
+    public void deletePlacementTest(Long testId) throws Exception {
+        txManager.runInTransaction(em -> {
+            testRepo.delete(em, testId);
+            return null;
+        });
+    }
+    @Override
+    public List<Enrollment> getAllEnrollments() throws Exception {
+        return txManager.runInTransaction(em -> {
+            return enrollmentRepo.findAll(em);
+        });
+    }
+
+    @Override
+    public void updateEnrollmentStatus(Long enrollmentId, EnrollmentStatus newStatus) throws Exception {
+        txManager.runInTransaction(em -> {
+            // Dùng EntityManager tìm trực tiếp theo ID
+            Enrollment enrollment = em.find(Enrollment.class, enrollmentId);
+            if (enrollment == null) throw new Exception("Không tìm thấy thông tin ghi danh!");
+
+            enrollment.setStatus(newStatus);
+            // JPA tự động lưu lại thay đổi khi Transaction commit
+            return null;
+        });
+    }
 }
