@@ -1,4 +1,4 @@
-package vn.edu.ute.ui;
+package vn.edu.ute.ui.course;
 
 import vn.edu.ute.common.enumeration.DurationUnit;
 import vn.edu.ute.common.enumeration.Level;

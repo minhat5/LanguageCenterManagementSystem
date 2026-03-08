@@ -16,6 +16,7 @@ public class RoomServiceImpl implements RoomService {
         this.tx = tx;
     }
 
+    // Lấy tất cả phòng học
     @Override
     public List<Room> getAll() throws Exception {
         return tx.runInTransaction(roomRepo::findAll);

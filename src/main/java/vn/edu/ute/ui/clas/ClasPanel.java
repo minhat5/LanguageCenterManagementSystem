@@ -1,4 +1,4 @@
-package vn.edu.ute.ui;
+package vn.edu.ute.ui.clas;
 
 
 import vn.edu.ute.common.enumeration.ClassStatus;

@@ -1,4 +1,4 @@
-package vn.edu.ute.ui;
+package vn.edu.ute.ui.course;
 
 import vn.edu.ute.common.enumeration.Level;
 import vn.edu.ute.common.enumeration.Status;
@@ -209,25 +209,14 @@ public class CoursePanel extends JPanel {
             JOptionPane.showMessageDialog(this, "Vui lòng chọn khoá học để chỉnh sửa.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
             return;
         }
-
-        Course editCourse = new Course(
-                selectedCourse.getCourseId(),
-                selectedCourse.getCourseName(),
-                selectedCourse.getDescription(),
-                selectedCourse.getLevel(),
-                selectedCourse.getDuration(),
-                selectedCourse.getDurationUnit(),
-                selectedCourse.getFee(),
-                selectedCourse.getStatus()
-        );
-        Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);
-        CourseFormDialog dlg = new CourseFormDialog(parent, "Cập nhật khoá học", editCourse);
-        dlg.setVisible(true);
-        if (!dlg.isSaved()) {
-            return;
-        }
-
         try {
+            Course editCourse = courseService.findById(selectedCourse.getCourseId());
+            Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);
+            CourseFormDialog dlg = new CourseFormDialog(parent, "Cập nhật khoá học", editCourse);
+            dlg.setVisible(true);
+            if (!dlg.isSaved()) {
+                return;
+            }
             courseService.update(dlg.getCourse());
             JOptionPane.showMessageDialog(this, "Cập nhật khoá học thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
             reloadAll();

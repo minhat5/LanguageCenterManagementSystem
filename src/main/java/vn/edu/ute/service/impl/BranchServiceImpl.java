@@ -16,6 +16,7 @@ public class BranchServiceImpl implements BranchService {
         this.tx = tx;
     }
 
+    // Lấy tất cả chi nhánh
     @Override
     public List<Branch> getAll() throws Exception {
         return tx.runInTransaction(branchRepo::findAll);

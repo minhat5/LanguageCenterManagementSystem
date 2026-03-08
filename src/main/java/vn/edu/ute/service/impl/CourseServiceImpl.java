@@ -85,4 +85,16 @@ public class CourseServiceImpl implements CourseService {
                 .filter(c -> c.getLevel() == level)
                 .toList();
     }
+
+    // Tìm khoá học theo id
+    @Override
+    public Course findById(Long id) throws Exception {
+        return tx.runInTransaction(em -> {
+            Course course = courseRepository.findById(em, id);
+            if (course == null) {
+                throw new IllegalArgumentException("Không tìm thấy khoá học với mã khoá học: " + id);
+            }
+            return course;
+        });
+    }
 }

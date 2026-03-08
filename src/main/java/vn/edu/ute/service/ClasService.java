@@ -19,4 +19,5 @@ public interface ClasService {
     List<Clas> getClasViewsByCourse(List<Clas> classes, Course course);
     List<Clas> getClasViewsByBranch(List<Clas> classes, Branch branch);
     List<Clas> findByName(List<Clas> classes, String name);
+    List<Clas> getAllActiveClasses() throws Exception;
 }

@@ -10,7 +10,12 @@ public class ScheduleRepoImpl implements ScheduleRepo {
 
     @Override
     public List<Schedule> findAll(EntityManager em) {
-        return em.createQuery("SELECT s FROM Schedule s", Schedule.class).getResultList();
+        String jpql = "SELECT s FROM Schedule s " +
+                "LEFT JOIN FETCH s.clas c " +
+                "LEFT JOIN FETCH c.course " +
+                "LEFT JOIN FETCH s.room r " +
+                "LEFT JOIN FETCH r.branch";
+        return em.createQuery(jpql, Schedule.class).getResultList();
     }
 
     @Override
@@ -34,6 +39,12 @@ public class ScheduleRepoImpl implements ScheduleRepo {
 
     @Override
     public Schedule findById(EntityManager em, Long id) {
-        return em.find(Schedule.class, id);
+        String jpql = "SELECT s FROM Schedule s " +
+                "LEFT JOIN FETCH s.clas c " +
+                "LEFT JOIN FETCH c.course " +
+                "LEFT JOIN FETCH s.room r " +
+                "LEFT JOIN FETCH r.branch " +
+                "WHERE s.scheduleId = :id";
+        return em.createQuery(jpql, Schedule.class).setParameter("id", id).getSingleResult();
     }
 }

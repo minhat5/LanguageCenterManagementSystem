@@ -124,4 +124,13 @@ public class ClasServiceImpl implements ClasService {
                 .filter(c -> c.getClassName().toLowerCase().contains(searchName))
                 .toList();
     }
+
+    // Lấy tất cả lớp học đang hoạt động (không bị huỷ hoặc đã hoàn thành)
+    @Override
+    public List<Clas> getAllActiveClasses() throws Exception {
+        List<Clas> allClasses = getAll();
+        return allClasses.stream()
+                .filter(c -> c.getStatus() != ClassStatus.Cancelled && c.getStatus() != ClassStatus.Completed)
+                .toList();
+    }
 }

@@ -14,4 +14,5 @@ public interface CourseService {
     List<Course> getCoursesByStatus(List<Course> courses, Status status);
     List<Course> findByName(List<Course> courses, String name);
     List<Course> getCoursesByLevel(List<Course> courses, Level level);
+    Course findById(Long id) throws Exception;
 }

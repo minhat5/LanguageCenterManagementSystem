@@ -16,6 +16,7 @@ public class TeacherServiceImpl implements TeacherService {
         this.tx = tx;
     }
 
+    // Lấy tất cả giáo viên
     @Override
     public List<Teacher> getAll() throws Exception {
         return tx.runInTransaction(teacherRepo::findAll);
