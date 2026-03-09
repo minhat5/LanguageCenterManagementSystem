@@ -1,4 +1,4 @@
-package vn.edu.ute.ui;
+package vn.edu.ute.ui.plamentTest;
 
 import vn.edu.ute.model.PlacementTest;
 import vn.edu.ute.service.EnrollmentService;

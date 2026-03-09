@@ -1,4 +1,4 @@
-package vn.edu.ute.ui;
+package vn.edu.ute.ui.enrollment;
 
 import vn.edu.ute.enumeration.EnrollmentStatus;
 import vn.edu.ute.model.Clas;
