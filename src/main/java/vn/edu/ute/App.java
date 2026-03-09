@@ -20,16 +20,19 @@ public class App {
         BranchRepo branchRepo = new BranchRepoImpl();
         RoomRepo roomRepo = new RoomRepoImpl();
         ScheduleRepo scheduleRepo = new ScheduleRepoImpl();
+        AttendanceRepo attendanceRepo = new AttendanceRepoImpl();
+        EnrollmentRepo enrollmentRepo = new EnrollmentRepoImpl();
 
         CourseService courseService = new CourseServiceImpl(courseRepo, tx);
         ClasService classService = new ClasServiceImpl(classRepo, tx);
         TeacherService teacherService = new TeacherServiceImpl(teacherRepo, tx);
         BranchService branchService = new BranchServiceImpl(branchRepo, tx);
         RoomService roomService = new RoomServiceImpl(roomRepo, tx);
-        ScheduleService scheduleService = new ScheduleServiceImpl(scheduleRepo, tx);
+        ScheduleService scheduleService = new ScheduleServiceImpl(scheduleRepo, attendanceRepo, enrollmentRepo, tx);
+        AttendanceService attendanceService = new AttendanceServiceImpl(attendanceRepo, tx);
 
         SwingUtilities.invokeLater(() -> {
-            MainFrame frame = new MainFrame(courseService, classService, teacherService, branchService, roomService, scheduleService);
+            MainFrame frame = new MainFrame(courseService, classService, teacherService, branchService, roomService, scheduleService, attendanceService);
             frame.setVisible(true);
         });
     }

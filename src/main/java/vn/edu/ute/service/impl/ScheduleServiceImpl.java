@@ -1,10 +1,11 @@
 package vn.edu.ute.service.impl;
 
+import vn.edu.ute.common.enumeration.AttendanceStatus;
 import vn.edu.ute.db.TransactionManager;
 import vn.edu.ute.dto.ScheduleView;
-import vn.edu.ute.model.Clas;
-import vn.edu.ute.model.Room;
-import vn.edu.ute.model.Schedule;
+import vn.edu.ute.model.*;
+import vn.edu.ute.repo.AttendanceRepo;
+import vn.edu.ute.repo.EnrollmentRepo;
 import vn.edu.ute.repo.ScheduleRepo;
 import vn.edu.ute.service.ScheduleService;
 
@@ -13,10 +14,14 @@ import java.util.List;
 
 public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepo scheduleRepo;
+    private final AttendanceRepo attendanceRepo;
+    private final EnrollmentRepo enrollmentRepo;
     private final TransactionManager tx;
 
-    public ScheduleServiceImpl(ScheduleRepo scheduleRepo, TransactionManager tx) {
+    public ScheduleServiceImpl(ScheduleRepo scheduleRepo, AttendanceRepo attendanceRepo, EnrollmentRepo enrollmentRepo, TransactionManager tx) {
         this.scheduleRepo = scheduleRepo;
+        this.attendanceRepo = attendanceRepo;
+        this.enrollmentRepo = enrollmentRepo;
         this.tx = tx;
     }
 
@@ -26,20 +31,34 @@ public class ScheduleServiceImpl implements ScheduleService {
         return tx.runInTransaction(scheduleRepo::findAll);
     }
 
-    // Thêm lịch học mới
+    // Thêm lịch học mới đồng thời tạo điểm danh vắng mặt cho tất cả học viên của lớp học đó trong ngày học của lịch học mới được thêm vào
     @Override
     public void insert(Schedule schedule) throws Exception {
         tx.runInTransaction(em -> {
-            if(!isConflict(schedule, getAll())) {
-                scheduleRepo.insert(em, schedule);
-            } else {
-                throw new Exception("Lịch học bị trùng!");
+            List<Schedule> schedules = scheduleRepo.findAll(em);
+            if (isConflict(schedule, schedules)) {
+                throw new IllegalArgumentException("Lịch học bị trùng với lịch học khác về phòng hoặc giáo viên trong cùng giờ");
             }
+            scheduleRepo.insert(em, schedule);
+
+            Long classId = schedule.getClas().getClassId();
+            List<Enrollment> enrollments = enrollmentRepo.findAll(em);
+            enrollments.stream()
+                    .filter(e -> e.getClas().getClassId().equals(classId))
+                    .forEach(e -> {
+                        Attendance attendance = new Attendance();
+                        attendance.setStudent(e.getStudent());
+                        attendance.setClas(e.getClas());
+                        attendance.setStatus(AttendanceStatus.Absent);
+                        attendance.setAttendDate(schedule.getStudyDate());
+                        attendanceRepo.insert(em, attendance);
+                    });
             return null;
         });
     }
 
-    // Cập nhật thông tin lịch học
+    // Cập nhật thông tin lịch học đồng thời cập nhật ngày học của tất cả điểm danh của lớp học đó
+    // nếu ngày học của lịch học được cập nhật có thay đổi so với ngày học của lịch học trước khi được cập nhật
     @Override
     public void update(Schedule schedule) throws Exception {
         tx.runInTransaction(em -> {
@@ -47,12 +66,27 @@ public class ScheduleServiceImpl implements ScheduleService {
             if(existingSchedule == null) {
                 throw new IllegalArgumentException("Không tìm thấy lịch học với mã lịch học: " + schedule.getScheduleId());
             }
+            List<Schedule> schedules = scheduleRepo.findAll(em);
+            schedules.removeIf(existingSchedule::equals);
+            if (isConflict(schedule, schedules)) {
+                throw new IllegalArgumentException("Lịch học bị trùng với lịch học khác về phòng hoặc giáo viên trong cùng giờ");
+            }
             scheduleRepo.update(em, schedule);
+            if(!existingSchedule.getStudyDate().equals(schedule.getStudyDate())) {
+                List<Attendance> attendances = attendanceRepo.findAll(em);
+                attendances.stream()
+                        .filter(a -> a.getClas().getClassId().equals(schedule.getClas().getClassId())
+                                && a.getAttendDate().equals(existingSchedule.getStudyDate()))
+                        .forEach(a -> {
+                            a.setAttendDate(schedule.getStudyDate());
+                            attendanceRepo.update(em, a);
+                        });
+            }
             return null;
         });
     }
 
-    // Xoá lịch học
+    // Xoá lịch học đồng thời xoá tất cả điểm danh của lớp học đó trong ngày học của lịch học được xoá
     @Override
     public void delete(Long id) throws Exception {
         tx.runInTransaction(em -> {
@@ -61,6 +95,11 @@ public class ScheduleServiceImpl implements ScheduleService {
                 throw new IllegalArgumentException("Không tìm thấy lịch học với mã lịch học: " + id);
             }
             scheduleRepo.delete(em, id);
+            List<Attendance> attendances = attendanceRepo.findAll(em);
+            attendances.stream()
+                    .filter(a -> a.getClas().getClassId().equals(schedule.getClas().getClassId())
+                            && a.getAttendDate().equals(schedule.getStudyDate()))
+                    .forEach(a -> attendanceRepo.delete(em, a.getAttendanceId()));
             return null;
         });
     }
@@ -73,6 +112,7 @@ public class ScheduleServiceImpl implements ScheduleService {
                         || s.getClas().getTeacher().getTeacherId().equals(newSchedule.getClas().getTeacher().getTeacherId()))
                         && s.getStartTime().isBefore(newSchedule.getEndTime())
                         && s.getEndTime().isAfter(newSchedule.getStartTime())
+                        && s.getClas().getClassId().equals(newSchedule.getClas().getClassId())
                 );
     }
 
