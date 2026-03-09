@@ -67,7 +67,7 @@ public class PromotionServiceImpl implements PromotionService {
             List<Promotion> allPromotions = promotionRepo.findAll(em);
             LocalDate today = LocalDate.now();
 
-            // LAMBDA STREAM ĐỂ LỌC KHUYẾN MÃI HỢP LỆ
+            // lamdas steam lọc khuyến mãi
             return allPromotions.stream()
                     // 1. Phải đang Active
                     .filter(p -> "ACTIVE".equalsIgnoreCase(p.getStatus().name()))

@@ -11,7 +11,7 @@ import vn.edu.ute.ui.PlacementTestManagerPanel;
 
 import javax.swing.*;
 
-public class App {
+public class    App {
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
             try {
