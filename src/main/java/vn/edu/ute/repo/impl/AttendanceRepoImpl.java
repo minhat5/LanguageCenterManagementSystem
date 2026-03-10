@@ -34,4 +34,15 @@ public class AttendanceRepoImpl implements AttendanceRepo {
     public Attendance findById(EntityManager em, Long id) {
         return em.find(Attendance.class, id);
     }
+
+    @Override
+    public List<Attendance> findByClassId(EntityManager em, Long classId) {
+        String jpql = "SELECT a FROM Attendance a " +
+                "JOIN FETCH a.student s " +
+                "JOIN FETCH a.clas c " +
+                "WHERE c.classId = :classId";
+        return em.createQuery(jpql, Attendance.class)
+                .setParameter("classId", classId)
+                .getResultList();
+    }
 }

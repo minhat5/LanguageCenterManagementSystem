@@ -106,7 +106,7 @@ public class AttendancePanel extends JPanel {
             loadComboBoxes();
 
             cboFilterClass.setSelectedIndex(0);
-            studyDateFilter.setText("");
+            studyDateFilter.setDateToToday();
             refreshTableByCurrentFilter();
         } catch(Exception e) {
             JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);

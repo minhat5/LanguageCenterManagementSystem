@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface EnrollmentRepo {
     List<Enrollment> findAll(EntityManager em);
+    List<Enrollment> findByClassId(EntityManager em, Long classId);
 }

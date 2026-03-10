@@ -11,4 +11,5 @@ public interface AttendanceRepo {
     void update(EntityManager em, Attendance attendance);
     void delete(EntityManager em, Long id);
     Attendance findById(EntityManager em, Long id);
+    List<Attendance> findByClassId(EntityManager em, Long classId);
 }

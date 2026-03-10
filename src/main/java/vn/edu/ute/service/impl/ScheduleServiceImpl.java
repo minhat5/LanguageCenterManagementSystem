@@ -42,10 +42,8 @@ public class ScheduleServiceImpl implements ScheduleService {
             scheduleRepo.insert(em, schedule);
 
             Long classId = schedule.getClas().getClassId();
-            List<Enrollment> enrollments = enrollmentRepo.findAll(em);
-            enrollments.stream()
-                    .filter(e -> e.getClas().getClassId().equals(classId))
-                    .forEach(e -> {
+            List<Enrollment> enrollments = enrollmentRepo.findByClassId(em, classId);
+            enrollments.forEach(e -> {
                         Attendance attendance = new Attendance();
                         attendance.setStudent(e.getStudent());
                         attendance.setClas(e.getClas());
@@ -66,19 +64,22 @@ public class ScheduleServiceImpl implements ScheduleService {
             if(existingSchedule == null) {
                 throw new IllegalArgumentException("Không tìm thấy lịch học với mã lịch học: " + schedule.getScheduleId());
             }
+            LocalDate oldStudyDate = existingSchedule.getStudyDate();
+            LocalDate newStudyDate = schedule.getStudyDate();
+
             List<Schedule> schedules = scheduleRepo.findAll(em);
             schedules.removeIf(existingSchedule::equals);
             if (isConflict(schedule, schedules)) {
                 throw new IllegalArgumentException("Lịch học bị trùng với lịch học khác về phòng hoặc giáo viên trong cùng giờ");
             }
+
             scheduleRepo.update(em, schedule);
-            if(!existingSchedule.getStudyDate().equals(schedule.getStudyDate())) {
-                List<Attendance> attendances = attendanceRepo.findAll(em);
+            if(!oldStudyDate.equals(newStudyDate)) {
+                List<Attendance> attendances = attendanceRepo.findByClassId(em, schedule.getClas().getClassId());
                 attendances.stream()
-                        .filter(a -> a.getClas().getClassId().equals(schedule.getClas().getClassId())
-                                && a.getAttendDate().equals(existingSchedule.getStudyDate()))
+                        .filter(a -> a.getAttendDate().equals(oldStudyDate))
                         .forEach(a -> {
-                            a.setAttendDate(schedule.getStudyDate());
+                            a.setAttendDate(newStudyDate);
                             attendanceRepo.update(em, a);
                         });
             }
@@ -94,12 +95,11 @@ public class ScheduleServiceImpl implements ScheduleService {
             if (schedule == null) {
                 throw new IllegalArgumentException("Không tìm thấy lịch học với mã lịch học: " + id);
             }
-            scheduleRepo.delete(em, id);
-            List<Attendance> attendances = attendanceRepo.findAll(em);
+            List<Attendance> attendances = attendanceRepo.findByClassId(em, schedule.getClas().getClassId());
             attendances.stream()
-                    .filter(a -> a.getClas().getClassId().equals(schedule.getClas().getClassId())
-                            && a.getAttendDate().equals(schedule.getStudyDate()))
+                    .filter(a -> a.getAttendDate().equals(schedule.getStudyDate()))
                     .forEach(a -> attendanceRepo.delete(em, a.getAttendanceId()));
+            scheduleRepo.delete(em, id);
             return null;
         });
     }
@@ -107,13 +107,38 @@ public class ScheduleServiceImpl implements ScheduleService {
     // Kiểm tra lịch học mới có bị trùng với phòng hoặc giáo viên trong cùng giờ với lịch học nào đó khác không
     public boolean isConflict(Schedule newSchedule, List<Schedule> existingSchedules) {
         return existingSchedules.stream()
-                .anyMatch(s -> s.getStudyDate().equals(newSchedule.getStudyDate())
-                        && (s.getRoom().getRoomId().equals(newSchedule.getRoom().getRoomId())
-                        || s.getClas().getTeacher().getTeacherId().equals(newSchedule.getClas().getTeacher().getTeacherId()))
-                        && s.getStartTime().isBefore(newSchedule.getEndTime())
-                        && s.getEndTime().isAfter(newSchedule.getStartTime())
-                        && s.getClas().getClassId().equals(newSchedule.getClas().getClassId())
-                );
+                .filter(s -> newSchedule.getScheduleId() == null || !s.getScheduleId().equals(newSchedule.getScheduleId()))
+                .anyMatch(s -> {
+                    // Nếu khác ngày thì chắc chắn không bao giờ trùng
+                    if (!s.getStudyDate().equals(newSchedule.getStudyDate())) {
+                        return false;
+                    }
+
+                    // LUẬT 1: Cùng một ngày, cùng một lớp -> Trùng lịch ngay lập tức!
+                    boolean isSameClass = s.getClas().getClassId().equals(newSchedule.getClas().getClassId());
+                    if (isSameClass) {
+                        return true;
+                    }
+
+                    // XÉT TRÙNG GIỜ (Chỉ chạy đến đây nếu là 2 lớp khác nhau)
+                    boolean isTimeOverlap = s.getStartTime().isBefore(newSchedule.getEndTime())
+                            && s.getEndTime().isAfter(newSchedule.getStartTime());
+
+                    if (isTimeOverlap) {
+                        // LUẬT 2: Trùng giờ và Cùng phòng -> Trùng lịch!
+                        boolean isSameRoom = s.getRoom().getRoomId().equals(newSchedule.getRoom().getRoomId());
+
+                        // LUẬT 3: Trùng giờ và Cùng giáo viên -> Trùng lịch!
+                        boolean isSameTeacher = s.getClas().getTeacher().getTeacherId().equals(newSchedule.getClas().getTeacher().getTeacherId());
+
+                        if (isSameRoom || isSameTeacher) {
+                            return true;
+                        }
+                    }
+
+                    // Vượt qua hết các luật trên thì là lịch hợp lệ
+                    return false;
+                });
     }
 
     // Thêm lịch học cho đến ngày kết thúc của lớp học mỗi tuần một lịch để tạo được nhiều lịch học cho một lớp học
@@ -128,7 +153,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             newSchedule.setStartTime(schedule.getStartTime());
             newSchedule.setEndTime(schedule.getEndTime());
             newSchedule.setStudyDate(currentDate);
-            if (!isConflict(schedule, existingSchedules)) {
+            if (!isConflict(newSchedule, existingSchedules)) {
                 insert(newSchedule);
             }
             currentDate = currentDate.plusWeeks(1);
