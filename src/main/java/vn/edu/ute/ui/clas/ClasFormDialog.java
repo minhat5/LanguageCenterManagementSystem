@@ -1,6 +1,7 @@
 package vn.edu.ute.ui.clas;
 
 import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
 import vn.edu.ute.common.enumeration.ClassStatus;
 import vn.edu.ute.model.*;
 import vn.edu.ute.service.RoomService;
@@ -8,6 +9,7 @@ import vn.edu.ute.util.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 import java.util.List;
 
 public class ClasFormDialog extends JDialog {
@@ -125,10 +127,19 @@ public class ClasFormDialog extends JDialog {
         g.gridx = 0; g.gridy = r; form.add(new JLabel("Phòng:"), g);
         g.gridx = 1; form.add(cboRoom, g);
 
+        DatePickerSettings startSettings = dateStart.getSettings();
+        startSettings.setAllowKeyboardEditing(false);
+        startSettings.setVetoPolicy(date -> !date.isBefore(LocalDate.now()));
         r++;
         g.gridx = 0; g.gridy = r; form.add(new JLabel("Ngày bắt đầu:"), g);
         g.gridx = 1; form.add(dateStart, g);
 
+        DatePickerSettings endSettings = dateEnd.getSettings();
+        endSettings.setAllowKeyboardEditing(false);
+        endSettings.setVetoPolicy(date -> {
+            if (dateStart.getDate() == null) return date.isAfter(LocalDate.now());
+            return date.isAfter(dateStart.getDate());
+        });
         r++;
         g.gridx = 0; g.gridy = r; form.add(new JLabel("Ngày kết thúc:"), g);
         g.gridx = 1; form.add(dateEnd, g);

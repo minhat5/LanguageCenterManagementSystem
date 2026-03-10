@@ -178,7 +178,7 @@ public class AttendancePanel extends JPanel {
             }
 
             JOptionPane.showMessageDialog(this, "Cập nhật điểm danh thành công!", "Thành công", JOptionPane.INFORMATION_MESSAGE);
-            reloadAll(); // Tải lại bảng
+            reloadAll();
 
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Lỗi khi cập nhật điểm danh: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);

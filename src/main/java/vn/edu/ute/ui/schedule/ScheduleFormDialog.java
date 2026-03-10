@@ -1,12 +1,16 @@
 package vn.edu.ute.ui.schedule;
 
 import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.github.lgooddatepicker.components.TimePicker;
+import com.github.lgooddatepicker.components.TimePickerSettings;
 import vn.edu.ute.model.*;
 import vn.edu.ute.util.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 public class ScheduleFormDialog extends JDialog {
@@ -74,18 +78,57 @@ public class ScheduleFormDialog extends JDialog {
             }
         });
 
+        DatePickerSettings dateSettings = studyDate.getSettings();
+        dateSettings.setAllowKeyboardEditing(false);
+        dateSettings.setVetoPolicy(date -> date.isAfter(LocalDate.now()));
+        studyDate.setDate(LocalDate.now().plusDays(1));
         r++;
         g.gridx = 0; g.gridy = r; form.add(new JLabel("Ngày học:"), g);
         g.gridx = 1; form.add(studyDate, g);
+
+
+        TimePickerSettings startSettings = startTime.getSettings();
+        startSettings.setAllowKeyboardEditing(false);
+        startSettings.setVetoPolicy(time -> {
+                LocalTime openTime = LocalTime.of(7, 0);
+                LocalTime closeTime = LocalTime.of(22, 0);
+                return !time.isBefore(openTime) && !time.isAfter(closeTime);
+        });
 
         r++;
         g.gridx = 0; g.gridy = r; form.add(new JLabel("Giờ bắt đầu:"), g);
         g.gridx = 1; form.add(startTime, g);
 
+
+        TimePickerSettings endSettings = endTime.getSettings();
+        endSettings.setAllowKeyboardEditing(false);
+        endSettings.setVetoPolicy(time -> {
+            LocalTime openTime = LocalTime.of(7, 30);
+            LocalTime closeTime = LocalTime.of(22, 30);
+            return !time.isBefore(openTime) && !time.isAfter(closeTime);
+        });
         r++;
         g.gridx = 0; g.gridy = r; form.add(new JLabel("Giờ kết thúc:"), g);
         g.gridx = 1; form.add(endTime, g);
 
+        startTime.addTimeChangeListener(event -> {
+            LocalTime selectedStartTime = event.getNewTime();
+
+            if (selectedStartTime != null) {
+                // Cập nhật lại luật: Giờ kết thúc bắt buộc phải SAU Giờ bắt đầu
+                endSettings.setVetoPolicy(time -> time.isAfter(selectedStartTime) && !time.isAfter(LocalTime.of(23, 0)));
+
+                // Nếu Giờ kết thúc đang được chọn mà lại NHỎ HƠN hoặc BẰNG Giờ bắt đầu mới
+                //Tự động đẩy Giờ kết thúc lên thêm 30 phút
+                LocalTime currentEndTime = endTime.getTime();
+                if (currentEndTime != null && !currentEndTime.isAfter(selectedStartTime)) {
+                    endTime.setTime(selectedStartTime.plusMinutes(30));
+                }
+            } else {
+                // Nếu người dùng xóa Giờ bắt đầu, trả Giờ kết thúc về luật mặc định
+                endSettings.setVetoPolicy(time -> !time.isBefore(LocalTime.of(7, 0)) && !time.isAfter(LocalTime.of(22, 0)));
+            }
+        });
         r++;
         g.gridx = 0; g.gridy = r; form.add(new JLabel("Thông tin phòng:"), g);
         g.gridx = 1;
@@ -116,6 +159,10 @@ public class ScheduleFormDialog extends JDialog {
 
             if (studyDate.getDate() == null) {
                 throw new IllegalArgumentException("Vui lòng chọn ngày học.");
+            }
+
+            if(studyDate.getDate().isBefore(LocalDate.now())) {
+                throw new IllegalArgumentException("Ngày học không được là ngày hôm nay hoặc trước đó.");
             }
 
             if (startTime.getTime() == null || endTime.getTime() == null) {

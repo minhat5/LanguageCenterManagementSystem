@@ -1,6 +1,7 @@
 package vn.edu.ute.ui.schedule;
 
 import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
 import vn.edu.ute.dto.ScheduleView;
 import vn.edu.ute.model.*;
 import vn.edu.ute.service.*;
@@ -46,6 +47,8 @@ public class SchedulePanel extends JPanel {
         JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT));
         left.add(new JLabel("Lịch học:"));
         left.add(cboFilterClass);
+        DatePickerSettings dateSettings = new DatePickerSettings();
+        dateSettings.setAllowKeyboardEditing(false);
         left.add(new JLabel("Ngày học:"));
         left.add(studyDateFilter);
 
