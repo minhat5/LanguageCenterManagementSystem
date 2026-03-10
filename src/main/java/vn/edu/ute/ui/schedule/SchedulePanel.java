@@ -47,7 +47,7 @@ public class SchedulePanel extends JPanel {
         JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT));
         left.add(new JLabel("Lịch học:"));
         left.add(cboFilterClass);
-        DatePickerSettings dateSettings = new DatePickerSettings();
+        DatePickerSettings dateSettings = studyDateFilter.getSettings();
         dateSettings.setAllowKeyboardEditing(false);
         left.add(new JLabel("Ngày học:"));
         left.add(studyDateFilter);
