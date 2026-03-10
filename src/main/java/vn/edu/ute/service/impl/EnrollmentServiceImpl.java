@@ -159,4 +159,32 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             return null;
         });
     }
+    @Override
+    public List<Clas> getAllClasses() throws Exception {
+        return txManager.runInTransaction(em -> clasRepo.findAll(em));
+    }
+
+    @Override
+    public void updateEnrollment(Long enrollmentId, Long newClassId, EnrollmentStatus newStatus, Result newResult) throws Exception {
+        txManager.runInTransaction(em -> {
+            // Tìm Ghi danh hiện tại
+            Enrollment enrollment = em.find(Enrollment.class, enrollmentId);
+            if (enrollment == null) throw new Exception("Không tìm thấy thông tin ghi danh!");
+
+            // Kiểm tra xem Lớp học có bị thay đổi không
+            if (!enrollment.getClas().getClassId().equals(newClassId)) {
+                Clas newClass = clasRepo.findById(em, newClassId);
+                if (newClass == null) throw new Exception("Không tìm thấy lớp học mới!");
+
+                // Cập nhật lớp học mới
+                enrollment.setClas(newClass);
+            }
+
+            // Cập nhật trạng thái và kết quả
+            enrollment.setStatus(newStatus);
+            enrollment.setResult(newResult);
+
+            return null;
+        });
+    }
 }

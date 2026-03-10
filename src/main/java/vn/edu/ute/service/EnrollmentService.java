@@ -1,6 +1,7 @@
 package vn.edu.ute.service;
 
 import vn.edu.ute.enumeration.EnrollmentStatus;
+import vn.edu.ute.enumeration.Result;
 import vn.edu.ute.model.Clas;
 import vn.edu.ute.model.Enrollment;
 import vn.edu.ute.model.PlacementTest;
@@ -17,4 +18,6 @@ public interface EnrollmentService {
     void deletePlacementTest(Long testId) throws Exception;
     List<Enrollment> getAllEnrollments() throws Exception;
     void updateEnrollmentStatus(Long enrollmentId, EnrollmentStatus newStatus) throws Exception;
+    List<Clas> getAllClasses() throws Exception;
+    void updateEnrollment(Long enrollmentId, Long newClassId, EnrollmentStatus newStatus, Result newResult) throws Exception;
 }

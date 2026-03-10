@@ -113,7 +113,9 @@ public class PlacementTestPanel extends JPanel {
         int row = table.getSelectedRow();
         if (row >= 0) {
             selectedTest = tableModel.getAt(row);
-            lblSelected.setText("Đã chọn: Bài thi ID: " + selectedTest.getTestId() + " | Học viên ID: " + selectedTest.getStudent().getStudentId());
+            lblSelected.setText("Đã chọn: Bài thi ID: " + selectedTest.getTestId() +
+                    " | Học viên: " + selectedTest.getStudent().getStudentId() +
+                    " - " + selectedTest.getStudent().getFullName());
         } else {
             selectedTest = null;
             lblSelected.setText("Đã chọn: (Không)");
@@ -160,7 +162,7 @@ public class PlacementTestPanel extends JPanel {
     // ==========================================
 
     static class PlacementTestTableModel extends AbstractTableModel {
-        private final String[] columns = {"Mã Test", "Mã HV", "Ngày Thi", "Điểm", "Level Gợi Ý", "Ghi Chú"};
+        private final String[] columns = {"Mã Test", "Mã HV", "Tên Học Viên", "Ngày Thi", "Điểm", "Level Gợi Ý", "Ghi Chú"};
         private List<PlacementTest> data = new ArrayList<>();
 
         public void setData(List<PlacementTest> data) { this.data = data; fireTableDataChanged(); }
@@ -168,16 +170,18 @@ public class PlacementTestPanel extends JPanel {
         @Override public int getRowCount() { return data.size(); }
         @Override public int getColumnCount() { return columns.length; }
         @Override public String getColumnName(int col) { return columns[col]; }
+
         @Override
         public Object getValueAt(int rowIndex, int columnIndex) {
             PlacementTest p = data.get(rowIndex);
             switch (columnIndex) {
                 case 0: return p.getTestId();
                 case 1: return p.getStudent().getStudentId();
-                case 2: return p.getTestDate();
-                case 3: return p.getScore();
-                case 4: return p.getSuggestedLevel();
-                case 5: return p.getNote();
+                case 2: return p.getStudent().getFullName();
+                case 3: return p.getTestDate();
+                case 4: return p.getScore();
+                case 5: return p.getSuggestedLevel();
+                case 6: return p.getNote();
                 default: return "";
             }
         }
