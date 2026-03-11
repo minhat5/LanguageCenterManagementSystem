@@ -51,6 +51,12 @@
             <version>1.18.38</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.github.lgooddatepicker</groupId>
+            <artifactId>LGoodDatePicker</artifactId>
+            <version>11.2.1</version>
+        </dependency>
     </dependencies>
 
     <build>

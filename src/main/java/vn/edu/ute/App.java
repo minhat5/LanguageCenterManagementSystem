@@ -4,87 +4,83 @@ import vn.edu.ute.common.enumeration.Role;
 import vn.edu.ute.common.enumeration.Status;
 import vn.edu.ute.db.TransactionManager;
 import vn.edu.ute.model.Staff;
-import vn.edu.ute.model.UserAccount;
-import vn.edu.ute.service.impl.AuthServiceImpl;
-import vn.edu.ute.service.impl.BranchServiceImpl;
-import vn.edu.ute.service.impl.RoomServiceImpl;
-import vn.edu.ute.service.impl.StaffServiceImpl;
-import vn.edu.ute.service.impl.StudentServiceImpl;
-import vn.edu.ute.service.impl.TeacherServiceImpl;
-import vn.edu.ute.repo.BranchRepository;
-import vn.edu.ute.repo.impl.BranchRepositoryImpl;
-import vn.edu.ute.repo.impl.RoomRepositoryImpl;
-import vn.edu.ute.repo.impl.StaffRepositoryImpl;
-import vn.edu.ute.repo.impl.TeacherRepositoryImpl;
-import vn.edu.ute.repo.impl.UserAccountRepositoryImpl;
-import vn.edu.ute.db.Jpa;
+import vn.edu.ute.repo.*;
+import vn.edu.ute.repo.impl.*;
+import vn.edu.ute.service.*;
+import vn.edu.ute.service.impl.*;
+import vn.edu.ute.ui.UI;
+import vn.edu.ute.ui.LoginFrame;
 
+import javax.swing.*;
 import java.util.List;
 
 public class App {
-    // ANSI Escape Codes để làm đẹp terminal (Màu sắc)
     public static final String RESET = "\u001B[0m";
     public static final String GREEN = "\u001B[32m";
     public static final String RED = "\u001B[31m";
     public static final String CYAN = "\u001B[36m";
     public static final String YELLOW = "\u001B[33m";
-    public static final String BOLD = "\u001B[1m";
 
     public static void main(String[] args) {
-        
+        UI.initLookAndFeel();
+
         try {
-            System.out.println(YELLOW + "[*] Khởi tạo kết nối CSDL và các Services..." + RESET);
+            System.out.println(YELLOW + "[*] Khởi tạo hệ thống toàn diện..." + RESET);
             
-            // gọi di
-            TransactionManager txManager = new TransactionManager();
+            // 1. Khởi tạo Manager & Repositories (Gộp cả 2 nhánh)
+            TransactionManager tx = new TransactionManager();
             UserAccountRepositoryImpl userRepo = new UserAccountRepositoryImpl();
             StaffRepositoryImpl staffRepo = new StaffRepositoryImpl();
-            vn.edu.ute.repo.impl.StudentRepositoryImpl studentRepo = new vn.edu.ute.repo.impl.StudentRepositoryImpl();
-            
-            AuthServiceImpl authService = new AuthServiceImpl(userRepo, txManager);
-            StaffServiceImpl staffService = new StaffServiceImpl(staffRepo, userRepo, txManager);
-            StudentServiceImpl studentService = new StudentServiceImpl(studentRepo, userRepo, txManager);
-            
-            BranchRepositoryImpl branchRepo = new BranchRepositoryImpl();
-            RoomRepositoryImpl roomRepo = new RoomRepositoryImpl();
-            TeacherRepositoryImpl teacherRepo = new TeacherRepositoryImpl();
-            
-            BranchServiceImpl branchService = new BranchServiceImpl(branchRepo, txManager);
-            RoomServiceImpl roomService = new RoomServiceImpl(roomRepo, txManager);
-            TeacherServiceImpl teacherService = new TeacherServiceImpl(teacherRepo, userRepo, txManager);
+            StudentRepositoryImpl studentRepo = new StudentRepositoryImpl();
+            CourseRepo courseRepo = new CourseRepoImpl();
+            ClasRepo classRepo = new ClasRepoImpl();
+            TeacherRepo teacherRepo = new TeacherRepoImpl();
+            BranchRepo branchRepo = new BranchRepoImpl();
+            RoomRepo roomRepo = new RoomRepoImpl();
+            ScheduleRepo scheduleRepo = new ScheduleRepoImpl();
+            AttendanceRepo attendanceRepo = new AttendanceRepoImpl();
+            EnrollmentRepo enrollmentRepo = new EnrollmentRepoImpl();
 
+            // 2. Khởi tạo Services (Gộp cả 2 nhánh)
+            AuthService authService = new AuthServiceImpl(userRepo, tx);
+            StaffService staffService = new StaffServiceImpl(staffRepo, userRepo, tx);
+            StudentService studentService = new StudentServiceImpl(studentRepo, userRepo, tx);
+            CourseService courseService = new CourseServiceImpl(courseRepo, tx);
+            ClasService classService = new ClasServiceImpl(classRepo, tx);
+            TeacherService teacherService = new TeacherServiceImpl(teacherRepo, userRepo, tx);
+            BranchService branchService = new BranchServiceImpl(branchRepo, tx);
+            RoomService roomService = new RoomServiceImpl(roomRepo, tx);
+            ScheduleService scheduleService = new ScheduleServiceImpl(scheduleRepo, attendanceRepo, enrollmentRepo, tx);
+            AttendanceService attendanceService = new AttendanceServiceImpl(attendanceRepo, tx);
+
+            // 3. Kiểm tra & Tạo Admin mặc định (Duy trì logic của Admin-HR)
             try {
                 List<Staff> allStaff = staffService.getAllStaffs();
-                System.out.println(YELLOW + "[*] Hiện có " + allStaff.size() + " nhân viên." + RESET);
-
                 if (allStaff.isEmpty()) {
-                    System.out.println(CYAN + "[*] Đang thử tạo Admin..." + RESET);
+                    System.out.println(CYAN + "[*] Đang khởi tạo tài khoản Admin hệ thống..." + RESET);
                     Staff admin = new Staff();
                     admin.setFullName("Super Admin");
-                    admin.setRole(Role.Admin); // Kiểm tra xem Role.Admin trong Java có khớp 'Staff' hay 'Admin' trong DB không
+                    admin.setRole(Role.Admin);
                     admin.setStatus(Status.Active);
-
-                    // Hãy đảm bảo hàm này bên trong có gọi txManager.begin() và txManager.commit()
                     staffService.createStaffAccount(admin, "admin", "123456");
-                    System.out.println(GREEN + "[+] Đã gọi lệnh tạo xong." + RESET);
+                    System.out.println(GREEN + "[+] Tạo Admin thành công!" + RESET);
                 }
             } catch (Exception ex) {
-                System.err.println(RED + "[-] Lỗi chi tiết: ");
-                ex.printStackTrace(); // Dùng printStackTrace để thấy rõ lỗi SQL gì
+                System.err.println(RED + "[-] Lỗi DB Seed: " + ex.getMessage() + RESET);
             }
 
-            
-            // goi giao dien
-            javax.swing.SwingUtilities.invokeLater(() -> {
-                vn.edu.ute.ui.LoginFrame loginFrame = new vn.edu.ute.ui.LoginFrame(
-                        authService, branchService, roomService, staffService, studentService, teacherService
+            // 4. Khởi chạy UI (Ưu tiên LoginFrame để bảo mật)
+            SwingUtilities.invokeLater(() -> {
+                LoginFrame loginFrame = new LoginFrame(
+                    authService, branchService, roomService, staffService, studentService, teacherService
                 );
+                // Lưu ý: Sau khi login thành công, bạn sẽ truyền các CourseService vào MainFrame sau.
                 loginFrame.setVisible(true);
             });
 
         } catch (Exception e) {
-            System.out.println(RED + "\n[!] CÓ LỖI: " + e.getMessage() + RESET);
+            System.out.println(RED + "[!] LỖI HỆ THỐNG: " + e.getMessage() + RESET);
             e.printStackTrace();
-        } 
+        }
     }
 }

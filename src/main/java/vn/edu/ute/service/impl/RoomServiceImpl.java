@@ -4,8 +4,10 @@ import vn.edu.ute.db.TransactionManager;
 import vn.edu.ute.model.Room;
 import vn.edu.ute.repo.RoomRepository;
 import vn.edu.ute.service.RoomService;
+import vn.edu.ute.common.enumeration.Status;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RoomServiceImpl implements RoomService {
 
@@ -15,6 +17,17 @@ public class RoomServiceImpl implements RoomService {
     public RoomServiceImpl(RoomRepository roomRepo, TransactionManager txManager) {
         this.roomRepo = roomRepo;
         this.txManager = txManager;
+    }    
+    @Override
+    public List<Room> getAll() throws Exception {
+        return getAllRooms();
+    }
+
+    @Override
+    public List<Room> getByBranchId(List<Room> rooms, Long branchId) {
+        return rooms.stream()
+                .filter(r -> r.getBranch() != null && r.getBranch().getBranchId().equals(branchId))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -46,7 +59,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
-    public List<Room> filterRooms(String keyword, vn.edu.ute.common.enumeration.Status status, Integer minCapacity) throws Exception {
+    public List<Room> filterRooms(String keyword, Status status, Integer minCapacity) throws Exception {
         return getAllRooms().stream()
             .filter(r -> {
                 boolean matchKw = (keyword == null || keyword.trim().isEmpty()) ||
@@ -56,6 +69,6 @@ public class RoomServiceImpl implements RoomService {
                 boolean matchCap = (minCapacity == null) || (r.getCapacity() != null && r.getCapacity() >= minCapacity);
                 return matchKw && matchSt && matchCap;
             })
-            .collect(java.util.stream.Collectors.toList());
+            .collect(Collectors.toList());
     }
 }

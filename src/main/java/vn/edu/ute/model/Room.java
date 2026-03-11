@@ -25,7 +25,7 @@ public class Room {
     private String roomName;
 
     @Column(name = "capacity", nullable = false)
-    private Integer capacity = 0;
+    private Integer capacity;
 
     @Column(name = "location", length = 150)
     private String location;

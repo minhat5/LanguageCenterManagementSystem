@@ -1,6 +1,7 @@
 package vn.edu.ute.service.impl;
 
 import vn.edu.ute.common.enumeration.Role;
+import vn.edu.ute.common.enumeration.Status;
 import vn.edu.ute.common.util.PasswordUtil;
 import vn.edu.ute.db.TransactionManager;
 import vn.edu.ute.model.Teacher;
@@ -10,6 +11,7 @@ import vn.edu.ute.repo.UserAccountRepository;
 import vn.edu.ute.service.TeacherService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TeacherServiceImpl implements TeacherService {
 
@@ -22,7 +24,10 @@ public class TeacherServiceImpl implements TeacherService {
         this.userAccountRepo = userAccountRepo;
         this.txManager = txManager;
     }
-
+    @Override
+    public List<Teacher> getAll() throws Exception {
+        return getAllTeachers();
+    }
     @Override
     public Teacher createTeacherAccount(Teacher teacherInfo, String username, String initialPassword) throws Exception {
         return txManager.runInTransaction(em -> {
@@ -54,7 +59,7 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public List<Teacher> getAllTeachers() throws Exception {
-        return txManager.runInTransaction(teacherRepo::findAll);
+        return txManager.runInTransaction(em -> teacherRepo.findAll(em));
     }
 
     @Override
@@ -71,7 +76,7 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public List<Teacher> filterTeachers(String keyword, vn.edu.ute.common.enumeration.Status status, String specialty) throws Exception {
+    public List<Teacher> filterTeachers(String keyword, Status status, String specialty) throws Exception {
         return getAllTeachers().stream()
             .filter(t -> {
                 boolean matchKw = (keyword == null || keyword.trim().isEmpty()) ||
@@ -82,6 +87,6 @@ public class TeacherServiceImpl implements TeacherService {
                                     (t.getSpecialty() != null && t.getSpecialty().toLowerCase().contains(specialty.toLowerCase()));
                 return matchKw && matchSt && matchSpec;
             })
-            .collect(java.util.stream.Collectors.toList());
+            .collect(Collectors.toList());
     }
 }

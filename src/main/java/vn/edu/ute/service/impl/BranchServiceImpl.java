@@ -1,11 +1,13 @@
 package vn.edu.ute.service.impl;
 
+import vn.edu.ute.common.enumeration.Status;
 import vn.edu.ute.db.TransactionManager;
 import vn.edu.ute.model.Branch;
-import vn.edu.ute.repo.BranchRepository;
+import vn.edu.ute.repo.BranchRepository; // Ưu tiên tên class này nếu bạn dùng JPA/EntityManager
 import vn.edu.ute.service.BranchService;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BranchServiceImpl implements BranchService {
 
@@ -17,6 +19,10 @@ public class BranchServiceImpl implements BranchService {
         this.txManager = txManager;
     }
 
+    @Override
+    public List<Branch> getAll() throws Exception {
+        return getAllBranches(); 
+    }
     @Override
     public Branch saveBranch(Branch branch) throws Exception {
         return txManager.runInTransaction(em -> branchRepo.save(em, branch));
@@ -41,7 +47,7 @@ public class BranchServiceImpl implements BranchService {
     }
 
     @Override
-    public List<Branch> filterBranches(String keyword, vn.edu.ute.common.enumeration.Status status, String addressKeyword) throws Exception {
+    public List<Branch> filterBranches(String keyword, Status status, String addressKeyword) throws Exception {
         return getAllBranches().stream()
             .filter(b -> {
                 boolean matchKw = (keyword == null || keyword.trim().isEmpty()) ||
@@ -52,6 +58,6 @@ public class BranchServiceImpl implements BranchService {
                                     (b.getAddress() != null && b.getAddress().toLowerCase().contains(addressKeyword.toLowerCase()));
                 return matchKw && matchSt && matchAddr;
             })
-            .collect(java.util.stream.Collectors.toList());
+            .collect(Collectors.toList());
     }
 }
