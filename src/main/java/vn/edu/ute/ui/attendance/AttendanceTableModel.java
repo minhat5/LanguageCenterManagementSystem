@@ -55,13 +55,13 @@ public class AttendanceTableModel extends AbstractTableModel {
 
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
-        return columnIndex == 4;
+        return columnIndex == 4 || columnIndex == 5;
     }
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+        AttendanceView attendance = data.get(rowIndex);
         if(columnIndex == 4) {
-            AttendanceView attendance = data.get(rowIndex);
             AttendanceStatus newStatus = (AttendanceStatus) aValue;
             AttendanceView updatedAttendance = new AttendanceView(
                     attendance.attendanceId(),
@@ -73,6 +73,18 @@ public class AttendanceTableModel extends AbstractTableModel {
                     attendance.createdAt()
             );
             data.set(rowIndex, updatedAttendance);
+            fireTableCellUpdated(rowIndex, columnIndex);
+        } else if(columnIndex == 5) {
+            String newNote = (String) aValue;
+            AttendanceView updatedView = new AttendanceView(
+                    attendance.attendanceId(),
+                    attendance.studentName(),
+                    attendance.className(),
+                    attendance.attendDate(),
+                    attendance.status(), newNote,
+                    attendance.createdAt()
+            );
+            data.set(rowIndex, updatedView);
             fireTableCellUpdated(rowIndex, columnIndex);
         }
     }

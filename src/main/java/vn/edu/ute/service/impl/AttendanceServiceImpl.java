@@ -1,5 +1,6 @@
 package vn.edu.ute.service.impl;
 
+import vn.edu.ute.common.enumeration.AttendanceStatus;
 import vn.edu.ute.db.TransactionManager;
 import vn.edu.ute.dto.AttendanceView;
 import vn.edu.ute.model.Attendance;
@@ -9,6 +10,8 @@ import vn.edu.ute.service.AttendanceService;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class AttendanceServiceImpl implements AttendanceService {
     private final AttendanceRepo attendanceRepo;
@@ -75,5 +78,15 @@ public class AttendanceServiceImpl implements AttendanceService {
         return attendances.stream()
                 .filter(a -> a.getAttendDate().equals(attendDate))
                 .toList();
+    }
+
+    @Override
+    public Map<AttendanceStatus, Long> countAttendanceByStatus(List<Attendance> attendances) {
+        Map<AttendanceStatus, Long> result = attendances.stream()
+                .collect(Collectors.groupingBy(Attendance::getStatus, Collectors.counting()));
+        for(AttendanceStatus status : AttendanceStatus.values()) {
+            result.putIfAbsent(status, 0L);
+        }
+        return result;
     }
 }

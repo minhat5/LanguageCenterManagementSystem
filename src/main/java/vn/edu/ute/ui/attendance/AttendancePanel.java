@@ -15,6 +15,7 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class AttendancePanel extends JPanel {
     private final ClasService clasService;
@@ -27,6 +28,10 @@ public class AttendancePanel extends JPanel {
     private final DatePicker studyDateFilter = new DatePicker();
 
     private final JLabel lblSelected = new JLabel("Đã chọn: (Không)");
+    private final JLabel lblPresent = new JLabel("Có mặt: 0");
+    private final JLabel lblAbsent = new JLabel("Vắng mặt: 0");
+    private final JLabel lblLate = new JLabel("Đi muộn: 0");
+    private final JLabel lblMaxStudents = new JLabel("Sĩ số: 0");
     private AttendanceView selectedAttendance = null;
     private List<Attendance> attendances;
 
@@ -73,6 +78,12 @@ public class AttendancePanel extends JPanel {
         studyDateFilter.addDateChangeListener(e -> refreshTableByCurrentFilter());
 
         JPanel bottom = new JPanel(new BorderLayout());
+        JPanel statusPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        statusPanel.add(lblPresent);
+        statusPanel.add(lblAbsent);
+        statusPanel.add(lblLate);
+        statusPanel.add(lblMaxStudents);
+        bottom.add(statusPanel, BorderLayout.EAST);
         bottom.add(lblSelected, BorderLayout.WEST);
 
         JPanel root = new JPanel(new BorderLayout(10, 10));
@@ -130,8 +141,14 @@ public class AttendancePanel extends JPanel {
                 attendances = attendanceService.getByAttendDate(attendances, studyDate);
             }
 
+            Map<AttendanceStatus, Long> statusCount = attendanceService.countAttendanceByStatus(attendances);
+
             tableModel.setData(attendanceService.toAttendanceView(attendances));
             lblSelected.setText("Đã chọn: (Không)");
+            lblPresent.setText("Có mặt: " + statusCount.get(AttendanceStatus.Present));
+            lblAbsent.setText("Vắng mặt: " + statusCount.get(AttendanceStatus.Absent));
+            lblLate.setText("Đi muộn: " + statusCount.get(AttendanceStatus.Late));
+            lblMaxStudents.setText("Sĩ số: " + attendances.size());
         } catch(Exception ex) {
             JOptionPane.showMessageDialog(this, "Lỗi khi tải các lịch học: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
@@ -164,11 +181,13 @@ public class AttendancePanel extends JPanel {
 
                 AttendanceStatus updatedStatus = (AttendanceStatus) tableModel.getValueAt(i, 4);
 
+                String note = (String) tableModel.getValueAt(i, 5);
                 attendances.stream()
                         .filter(a -> a.getAttendanceId().equals(view.attendanceId()))
                         .findFirst()
                         .ifPresent(a -> {
                             a.setStatus(updatedStatus);
+                            a.setNote(note);
                             try {
                                 attendanceService.update(a);
                             } catch (Exception e) {
