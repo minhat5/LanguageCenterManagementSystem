@@ -55,8 +55,7 @@ public class ScheduleServiceImpl implements ScheduleService {
         });
     }
 
-    // Cập nhật thông tin lịch học đồng thời cập nhật ngày học của tất cả điểm danh của lớp học đó
-    // nếu ngày học của lịch học được cập nhật có thay đổi so với ngày học của lịch học trước khi được cập nhật
+    // Cập nhật lịch học đồng thời cập nhật ngày học của tất cả điểm danh của lớp học đó trong ngày học cũ của lịch học được cập nhật thành ngày học mới nếu ngày học của lịch học được cập nhật bị thay đổi
     @Override
     public void update(Schedule schedule) throws Exception {
         tx.runInTransaction(em -> {

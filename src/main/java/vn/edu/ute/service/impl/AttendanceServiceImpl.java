@@ -22,12 +22,13 @@ public class AttendanceServiceImpl implements AttendanceService {
         this.tx = tx;
     }
 
-
+    //Lấy tất cả điểm danh
     @Override
     public List<Attendance> getAll() throws Exception {
         return tx.runInTransaction(attendanceRepo::findAll);
     }
 
+    //Cập nhật điểm danh
     @Override
     public void update(Attendance attendance) throws Exception {
         tx.runInTransaction(em -> {
@@ -40,6 +41,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         });
     }
 
+    //Tìm kiếm điểm danh theo ID
     @Override
     public Attendance findById(Long id) throws Exception {
         return tx.runInTransaction(em -> {
@@ -51,6 +53,7 @@ public class AttendanceServiceImpl implements AttendanceService {
         });
     }
 
+    // Chuyển đổi danh sách điểm danh sang dạng hiển thị
     @Override
     public List<AttendanceView> toAttendanceView(List<Attendance> attendances) {
         return attendances.stream()
@@ -66,6 +69,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .toList();
     }
 
+    // Lọc điểm danh theo lớp học
     @Override
     public List<Attendance> getByClass(List<Attendance> attendances, Clas clas) {
         return attendances.stream()
@@ -73,6 +77,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .toList();
     }
 
+    // Lọc điểm danh theo ngày điểm danh
     @Override
     public List<Attendance> getByAttendDate(List<Attendance> attendances, LocalDate attendDate) {
         return attendances.stream()
@@ -80,6 +85,7 @@ public class AttendanceServiceImpl implements AttendanceService {
                 .toList();
     }
 
+    // Đếm số lượng điểm danh theo trạng thái
     @Override
     public Map<AttendanceStatus, Long> countAttendanceByStatus(List<Attendance> attendances) {
         Map<AttendanceStatus, Long> result = attendances.stream()
