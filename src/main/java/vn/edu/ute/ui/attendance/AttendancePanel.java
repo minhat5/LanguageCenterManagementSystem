@@ -1,6 +1,7 @@
 package vn.edu.ute.ui.attendance;
 
 import com.github.lgooddatepicker.components.DatePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
 import vn.edu.ute.common.enumeration.AttendanceStatus;
 import vn.edu.ute.dto.AttendanceView;
 import vn.edu.ute.model.Attendance;
@@ -51,6 +52,8 @@ public class AttendancePanel extends JPanel {
         JPanel left = new JPanel(new FlowLayout(FlowLayout.LEFT));
         left.add(new JLabel("Lớp học:"));
         left.add(cboFilterClass);
+        DatePickerSettings dateSettings = studyDateFilter.getSettings();
+        dateSettings.setAllowKeyboardEditing(false);
         left.add(new JLabel("Ngày học:"));
         left.add(studyDateFilter);
 
