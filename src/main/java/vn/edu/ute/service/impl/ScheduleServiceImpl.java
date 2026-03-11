@@ -10,6 +10,7 @@ import vn.edu.ute.repo.ScheduleRepo;
 import vn.edu.ute.service.ScheduleService;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 
 public class ScheduleServiceImpl implements ScheduleService {
@@ -28,7 +29,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     // Lấy tất cả lịch học
     @Override
     public List<Schedule> getAll() throws Exception {
-        return tx.runInTransaction(scheduleRepo::findAll);
+        return tx.runInTransaction(scheduleRepo::findAll).stream()
+                .sorted(Comparator.comparing(s -> s.getClas().getClassName()))
+                .toList();
     }
 
     // Thêm lịch học mới đồng thời tạo điểm danh vắng mặt cho tất cả học viên của lớp học đó trong ngày học của lịch học mới được thêm vào

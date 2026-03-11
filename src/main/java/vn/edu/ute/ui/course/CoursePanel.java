@@ -162,7 +162,7 @@ public class CoursePanel extends JPanel {
 
             courses = courseService.getAll();
             if(statusFilter != null) {
-                courses = courseService.getCoursesByStatus(courses, statusFilter);
+                courses = courseService.getCoursesByStatus(courses).get(statusFilter == Status.Active ? Boolean.TRUE : Boolean.FALSE);
             }
 
             if(levelFilter != null) {

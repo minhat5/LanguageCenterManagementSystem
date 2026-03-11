@@ -8,6 +8,8 @@ import vn.edu.ute.repo.CourseRepo;
 import vn.edu.ute.service.CourseService;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class CourseServiceImpl implements CourseService {
     private final CourseRepo courseRepository;
@@ -63,10 +65,11 @@ public class CourseServiceImpl implements CourseService {
 
     // Lọc khoá học theo trạng thái
     @Override
-    public List<Course> getCoursesByStatus(List<Course> courses, Status status) {
+    public Map<Boolean, List<Course>> getCoursesByStatus(List<Course> courses) {
         return courses.stream()
-                .filter(c -> c.getStatus() == status)
-                .toList();
+                .collect(Collectors.partitioningBy(
+                        c -> c.getStatus() == Status.Active
+                ));
     }
 
     // Tìm khoá học theo tên (tìm kiếm không phân biệt chữ hoa chữ thường)

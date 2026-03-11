@@ -165,7 +165,7 @@ public class ClasPanel extends JPanel {
     private void reloadAll() {
         try {
             cacheCourses = courseService.getAll();
-            cacheCourses = courseService.getCoursesByStatus(cacheCourses, Status.Active);
+            cacheCourses = courseService.getCoursesByStatus(cacheCourses).get(true);
             cacheBranches = branchService.getAll();
             cacheTeachers = teacherService.getAll();
             cacheRooms = roomService.getAll();
