@@ -1,4 +1,4 @@
-package vn.edu.ute.model;
+ package vn.edu.ute.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
