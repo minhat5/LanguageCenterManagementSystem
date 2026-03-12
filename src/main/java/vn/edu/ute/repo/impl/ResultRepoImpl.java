@@ -25,6 +25,6 @@ public class ResultRepoImpl implements ResultRepo {
 
     @Override
     public List<Result> findAll(EntityManager em) {
-        return em.createQuery("SELECT r FROM Result r JOIN FETCH r.student JOIN FETCH r.clas ORDER BY r.updatedAt DESC", Result.class).getResultList();
+        return em.createQuery("SELECT r FROM Result r LEFT JOIN FETCH r.student LEFT JOIN FETCH r.clas c LEFT JOIN FETCH c.course ORDER BY r.updatedAt DESC", Result.class).getResultList();
     }
 }

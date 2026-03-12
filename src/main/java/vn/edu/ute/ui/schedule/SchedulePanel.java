@@ -68,6 +68,13 @@ public class SchedulePanel extends JPanel {
         btnDeleteList.addActionListener(e -> onDelete(true));
         btnRefresh.addActionListener(e -> reloadAll());
 
+        boolean canEdit = vn.edu.ute.common.policy.RolePolicy.canEditCourseAndClass();
+        btnAdd.setVisible(canEdit);
+        btnAddList.setVisible(canEdit);
+        btnEdit.setVisible(canEdit);
+        btnDelete.setVisible(canEdit);
+        btnDeleteList.setVisible(canEdit);
+
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         right.add(btnAdd);
         right.add(btnAddList);

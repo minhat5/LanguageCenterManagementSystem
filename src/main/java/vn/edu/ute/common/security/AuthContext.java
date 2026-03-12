@@ -16,14 +16,13 @@ public class AuthContext {
     private static final Map<StaffRole, Set<Permission>> STAFF_ROLE_PERMISSIONS = new EnumMap<>(StaffRole.class);
 
     static {
-        // Init permissions for Admin: full access
+        // Khởi tạo quyền cho Admin: toàn quyền truy cập
         ROLE_PERMISSIONS.put(Role.Admin, EnumSet.allOf(Permission.class));
         ROLE_PERMISSIONS.put(Role.Teacher, EnumSet.noneOf(Permission.class));
         ROLE_PERMISSIONS.put(Role.Student, EnumSet.noneOf(Permission.class));
         ROLE_PERMISSIONS.put(Role.Staff, EnumSet.noneOf(Permission.class));
 
-        // Init permissions for Manager: high-level access but might not manage
-        // accounts/finance
+        // Khởi tạo quyền cho Quản lý (Manager): truy cập cấp cao nhưng có thể không quản lý tài chính/tài khoản
         STAFF_ROLE_PERMISSIONS.put(StaffRole.Manager, EnumSet.of(
                 Permission.MANAGE_SYSTEM,
                 Permission.MANAGE_STAFF,
@@ -32,18 +31,18 @@ public class AuthContext {
                 Permission.MANAGE_COURSE,
                 Permission.VIEW_REPORT));
 
-        // Init permissions for Accountant: financial and related student data
+        // Khởi tạo quyền cho Kế toán (Accountant): dữ liệu tài chính và dữ liệu học viên liên quan
         STAFF_ROLE_PERMISSIONS.put(StaffRole.Accountant, EnumSet.of(
                 Permission.MANAGE_FINANCE,
                 Permission.MANAGE_STUDENT,
                 Permission.VIEW_REPORT));
 
-        // Init permissions for Consultant: enrollment, student support, courses
+        // Khởi tạo quyền cho Tư vấn viên (Consultant): ghi danh, hỗ trợ học viên, khóa học
         STAFF_ROLE_PERMISSIONS.put(StaffRole.Consultant, EnumSet.of(
                 Permission.MANAGE_STUDENT,
                 Permission.MANAGE_COURSE));
 
-        // Init permissions for Other: minimal or no specific module access
+        // Khởi tạo quyền cho các vai trò khác: truy cập tối thiểu hoặc không có quyền cụ thể
         STAFF_ROLE_PERMISSIONS.put(StaffRole.Other, EnumSet.noneOf(Permission.class));
     }
 

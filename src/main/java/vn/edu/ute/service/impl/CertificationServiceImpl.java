@@ -1,5 +1,6 @@
 package vn.edu.ute.service.impl;
 
+
 import vn.edu.ute.db.TransactionManager;
 import vn.edu.ute.model.Certificate;
 import vn.edu.ute.model.Result;
@@ -39,14 +40,25 @@ public class CertificationServiceImpl implements CertificationService {
         }
 
         txManager.runInTransaction(em -> {
+            if (result.getStudent() == null || result.getClas() == null) {
+                throw new Exception("Học viên hoặc Lớp học không hợp lệ!");
+            }
+            
             if (result.getResultId() == null) {
                 // Kiểm tra xem HV này đã có điểm môn này chưa
                 boolean exists = resultRepo.findAll(em).stream()
                         .anyMatch(x -> x.getStudent().getStudentId().equals(result.getStudent().getStudentId())
                                 && x.getClas().getClassId().equals(result.getClas().getClassId()));
                 if (exists) throw new Exception("Học viên này đã có điểm trong Lớp này rồi!");
+                
+                // Tránh lỗi Detached Entity bằng cách set Reference
+                result.setStudent(em.getReference(vn.edu.ute.model.Student.class, result.getStudent().getStudentId()));
+                result.setClas(em.getReference(vn.edu.ute.model.Clas.class, result.getClas().getClassId()));
+                
                 resultRepo.save(em, result);
             } else {
+                result.setStudent(em.getReference(vn.edu.ute.model.Student.class, result.getStudent().getStudentId()));
+                result.setClas(em.getReference(vn.edu.ute.model.Clas.class, result.getClas().getClassId()));
                 resultRepo.update(em, result);
             }
             return null;

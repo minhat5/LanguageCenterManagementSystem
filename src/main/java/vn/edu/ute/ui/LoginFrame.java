@@ -108,6 +108,7 @@ public class LoginFrame extends JFrame {
             this.dispose();
 
         } catch (Exception ex) {
+            ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Sai tài khoản hoặc mật khẩu!");
         }
     }

@@ -20,6 +20,6 @@ public class CertificateRepoImpl implements CertificateRepo {
 
     @Override
     public List<Certificate> findAll(EntityManager em) {
-        return em.createQuery("SELECT c FROM Certificate c JOIN FETCH c.student JOIN FETCH c.clas ORDER BY c.issueDate DESC", Certificate.class).getResultList();
+        return em.createQuery("SELECT c FROM Certificate c LEFT JOIN FETCH c.student LEFT JOIN FETCH c.clas cl LEFT JOIN FETCH cl.course ORDER BY c.issueDate DESC", Certificate.class).getResultList();
     }
 }

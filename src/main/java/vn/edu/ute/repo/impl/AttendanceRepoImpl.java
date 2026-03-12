@@ -10,8 +10,9 @@ public class AttendanceRepoImpl implements AttendanceRepo {
     @Override
     public List<Attendance> findAll(EntityManager em) {
         String jpql = "SELECT a FROM Attendance a " +
-                "JOIN FETCH a.student s " +
-                "JOIN FETCH a.clas c ";
+                "LEFT JOIN FETCH a.student s " +
+                "LEFT JOIN FETCH a.clas c " +
+                "LEFT JOIN FETCH c.course ";
         return em.createQuery(jpql, Attendance.class).getResultList();
     }
 

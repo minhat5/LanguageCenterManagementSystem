@@ -49,6 +49,9 @@ public class CertificationPanel extends JPanel {
         btnIssueCert.addActionListener(e -> onIssueCert());
         btnRefresh.addActionListener(e -> reloadAll());
 
+        btnAddResult.setVisible(vn.edu.ute.common.policy.RolePolicy.canEnterScore());
+        btnIssueCert.setVisible(vn.edu.ute.common.policy.RolePolicy.canIssueCertificate());
+
         top.add(btnAddResult);
         top.add(btnIssueCert);
         top.add(btnRefresh);
@@ -201,13 +204,26 @@ public class CertificationPanel extends JPanel {
             JButton btnSave = new JButton("Lưu");
             btnSave.addActionListener(e -> {
                 try {
+                    Student st = (Student) cboStudent.getSelectedItem();
+                    Clas cl = (Clas) cboClas.getSelectedItem();
+                    if (st == null || cl == null) {
+                        throw new Exception("Vui lòng chọn Sinh Viên và Lớp Học!");
+                    }
+                    if (txtScore.getText().trim().isEmpty()) {
+                        throw new Exception("Điểm không được để trống!");
+                    }
+                    
                     result = new Result();
-                    result.setStudent((Student) cboStudent.getSelectedItem());
-                    result.setClas((Clas) cboClas.getSelectedItem());
+                    result.setStudent(st);
+                    result.setClas(cl);
                     result.setScore(new BigDecimal(txtScore.getText().trim()));
                     result.setComment(txtComment.getText().trim());
                     saved = true; dispose();
-                } catch (Exception ex) { JOptionPane.showMessageDialog(this, "Điểm phải là số hợp lệ!"); }
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Điểm phải là số hợp lệ!");
+                } catch (Exception ex) { 
+                    JOptionPane.showMessageDialog(this, ex.getMessage()); 
+                }
             });
 
             setLayout(new BorderLayout());

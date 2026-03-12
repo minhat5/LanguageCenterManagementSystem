@@ -107,6 +107,11 @@ public class ClasPanel extends JPanel {
         btnDelete.addActionListener(e -> onDelete());
         btnRefresh.addActionListener(e -> reloadAll());
 
+        boolean canEdit = vn.edu.ute.common.policy.RolePolicy.canEditCourseAndClass();
+        btnAdd.setVisible(canEdit);
+        btnEdit.setVisible(canEdit);
+        btnDelete.setVisible(canEdit);
+
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         right.add(btnAdd);
         right.add(btnEdit);

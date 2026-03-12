@@ -33,9 +33,9 @@ public class NotificationRepoImpl implements NotificationRepo {
     }
 
     @Override
-    public List<Notification> findByTargetRole(EntityManager em, TargetRole targetRole) {
+            public List<Notification> findByTargetRole(EntityManager em, TargetRole targetRole) {
         return em.createQuery(
-                "SELECT n FROM Notification n WHERE n.targetRole = :role OR n.targetRole = 'All' ORDER BY n.createdAt DESC",
+                "SELECT n FROM Notification n LEFT JOIN FETCH n.createdByUser WHERE n.targetRole = :role OR n.targetRole = 'All' ORDER BY n.createdAt DESC",
                 Notification.class)
                 .setParameter("role", targetRole)
                 .getResultList();

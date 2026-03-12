@@ -9,7 +9,11 @@ public class UserAccountRepoImpl implements UserAccountRepo {
 
     @Override
     public Optional<vn.edu.ute.model.UserAccount> findByUsername(EntityManager em, String username) {
-        return em.createQuery("SELECT u FROM UserAccount u WHERE u.username = :username", UserAccount.class)
+        return em.createQuery("SELECT u FROM UserAccount u " +
+                "LEFT JOIN FETCH u.staff " +
+                "LEFT JOIN FETCH u.teacher " +
+                "LEFT JOIN FETCH u.student " +
+                "WHERE u.username = :username", UserAccount.class)
                 .setParameter("username", username)
                 .getResultStream()
                 .findFirst();

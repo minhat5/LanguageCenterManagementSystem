@@ -68,7 +68,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         //Lamdas Stream lọc danh sách phù hợp với trình độ và trạng thái
         return allClasses.stream()
                 // Lọc lớp đang mở
-                .filter(c -> c.getStatus().name().equals("Active"))
+                .filter(c -> c.getStatus() == vn.edu.ute.common.enumeration.ClassStatus.Open || c.getStatus() == vn.edu.ute.common.enumeration.ClassStatus.Planned)
                 // Lọc lớp có Level khớp với bài test
                 .filter(c -> c.getCourse() != null && c.getCourse().getLevel() == targetLevel)
                 .collect(Collectors.toList());

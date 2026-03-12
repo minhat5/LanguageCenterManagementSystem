@@ -17,7 +17,7 @@ public class EnrollmentRepoImpl implements EnrollmentRepo {
     }
     @Override
     public List<Enrollment> findAll(EntityManager em) {
-        String jpql = "SELECT e FROM Enrollment e JOIN FETCH e.student JOIN FETCH e.clas ORDER BY e.enrollmentDate DESC";
+        String jpql = "SELECT e FROM Enrollment e LEFT JOIN FETCH e.student LEFT JOIN FETCH e.clas c LEFT JOIN FETCH c.course LEFT JOIN FETCH c.teacher ORDER BY e.enrollmentDate DESC";
         return em.createQuery(jpql, Enrollment.class).getResultList();
     }
     @Override
