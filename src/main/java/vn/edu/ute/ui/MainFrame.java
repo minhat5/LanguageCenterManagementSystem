@@ -1,11 +1,17 @@
 package vn.edu.ute.ui;
 
 import vn.edu.ute.service.*;
-
+import vn.edu.ute.ui.attendance.AttendancePanel;
+import vn.edu.ute.ui.clas.ClasPanel;
+import vn.edu.ute.ui.course.CoursePanel;
+import vn.edu.ute.ui.schedule.SchedulePanel;
+import vn.edu.ute.ui.admin.StaffManagementPanel;
+import vn.edu.ute.ui.admin.FacilityManagementPanel;
+import vn.edu.ute.ui.admin.ProfileManagementPanel;
+import vn.edu.ute.ui.notification.NotificationPanel;
 import vn.edu.ute.ui.enrollment.EnrollmentPanel;
 import vn.edu.ute.ui.plamentTest.PlacementTestPanel;
 import vn.edu.ute.ui.promotion.PromotionPanel;
-// IMPORT THÊM PANEL CHỨNG CHỈ
 import vn.edu.ute.ui.certification.CertificationPanel;
 import vn.edu.ute.ui.report.ReportPanel;
 
@@ -13,78 +19,143 @@ import javax.swing.*;
 import java.awt.*;
 
 public class MainFrame extends JFrame {
+
     private CardLayout cardLayout;
     private JPanel mainContentPanel;
 
-    // Khai báo thêm các panel
+    // Panel từ nhánh Course & Admin-HR
+    private CoursePanel coursePanel;
+    private ClasPanel clasPanel;
+    private SchedulePanel schedulePanel;
+    private AttendancePanel attendancePanel;
+    private StaffManagementPanel staffPanel;
+    private FacilityManagementPanel facilityPanel;
+    private ProfileManagementPanel profilePanel;
+    private NotificationPanel notificationPanel;
+
+    // Panel từ nhánh Report
     private PlacementTestPanel testPanel;
     private EnrollmentPanel enrollmentPanel;
     private PromotionPanel promotionPanel;
     private CertificationPanel certificationPanel;
     private ReportPanel reportPanel;
-    public MainFrame(EnrollmentService enrollmentService,
-                     PromotionService promotionService,
-                     CertificationService certificationService,
-                     ClasService clasService,
-                     StudentService studentService,
-                     ReportService reportService) {
 
-        super("Hệ thống quản lý trung tâm đào tạo ngoại ngữ");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(1600, 800);
+    public MainFrame() {
+        // Sử dụng ServiceFactory để lấy tất cả các service (Tránh truyền tham số quá dài)
+        vn.edu.ute.common.factory.ServiceFactory factory = vn.edu.ute.common.factory.ServiceFactory.getInstance();
+        
+        CourseService courseService = factory.getCourseService();
+        ClasService classService = factory.getClassService();
+        TeacherService teacherService = factory.getTeacherService();
+        BranchService branchService = factory.getBranchService();
+        RoomService roomService = factory.getRoomService();
+        ScheduleService scheduleService = factory.getScheduleService();
+        AttendanceService attendanceService = factory.getAttendanceService();
+        StaffService staffService = factory.getStaffService();
+        StudentService studentService = factory.getStudentService();
+        NotificationService notificationService = factory.getNotificationService();
+        
+        // Các service cho nhánh Report (Đảm bảo ServiceFactory đã có các hàm này)
+        EnrollmentService enrollmentService = factory.getEnrollmentService();
+        PromotionService promotionService = factory.getPromotionService();
+        CertificationService certificationService = factory.getCertificationService();
+        ReportService reportService = factory.getReportService();
+
+        setTitle("Hệ thống Quản lý Trung tâm Ngoại ngữ Toàn diện");
+        setSize(1600, 900);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
         cardLayout = new CardLayout();
         mainContentPanel = new JPanel(cardLayout);
 
-        // Khởi tạo các panel
+        // --- KHỞI TẠO CÁC PANEL ---
+        
+        // Nhóm Course & HR
+        clasPanel = new ClasPanel(classService, courseService, teacherService, branchService, roomService);
+        coursePanel = new CoursePanel(courseService, selectedCourse -> {
+            cardLayout.show(mainContentPanel, "CLASS");
+            clasPanel.showAddDialog(selectedCourse);
+        });
+        schedulePanel = new SchedulePanel(scheduleService, classService, roomService);
+        attendancePanel = new AttendancePanel(classService, attendanceService);
+        staffPanel = new StaffManagementPanel(staffService);
+        facilityPanel = new FacilityManagementPanel(branchService, roomService);
+        profilePanel = new ProfileManagementPanel(studentService, teacherService);
+        notificationPanel = new NotificationPanel(notificationService);
+
+        // Nhóm Nghiệp vụ & Báo cáo (Report)
         testPanel = new PlacementTestPanel(enrollmentService);
         enrollmentPanel = new EnrollmentPanel(enrollmentService);
         promotionPanel = new PromotionPanel(promotionService);
-        certificationPanel = new CertificationPanel(certificationService, clasService, studentService);
+        certificationPanel = new CertificationPanel(certificationService, classService, studentService);
         reportPanel = new ReportPanel(reportService);
 
-        // Thêm các panel vào CardLayout
+        // --- THÊM VÀO CARDLAYOUT ---
+        mainContentPanel.add(coursePanel, "COURSE");
+        mainContentPanel.add(clasPanel, "CLASS");
+        mainContentPanel.add(schedulePanel, "SCHEDULE");
+        mainContentPanel.add(attendancePanel, "ATTENDANCE");
+        mainContentPanel.add(staffPanel, "STAFF");
+        mainContentPanel.add(facilityPanel, "FACILITY");
+        mainContentPanel.add(profilePanel, "PROFILE");
+        mainContentPanel.add(notificationPanel, "NOTIFICATION");
         mainContentPanel.add(testPanel, "TEST");
         mainContentPanel.add(enrollmentPanel, "ENROLLMENT");
         mainContentPanel.add(promotionPanel, "PROMOTION");
         mainContentPanel.add(certificationPanel, "CERTIFICATION");
         mainContentPanel.add(reportPanel, "REPORT");
-        // Thiết lập Menu bên trái
-        JPanel sideMenu = new JPanel(new GridLayout(10, 1, 5, 5));
+
+        // --- SIDE MENU ---
+        JPanel sideMenu = new JPanel(new GridLayout(15, 1, 5, 5));
+        sideMenu.setPreferredSize(new Dimension(230, 0));
         sideMenu.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        sideMenu.setPreferredSize(new Dimension(180, 0));
 
-        // Khởi tạo các nút
-        JButton btnCourse = new JButton("Quản lý Khoá học");
-        JButton btnClas = new JButton("Quản lý Lớp học");
-        JButton btnSchedule = new JButton("Quản lý Lịch học");
-        JButton btnTest = new JButton("Đánh giá Năng lực");
-        JButton btnEnrollment = new JButton("Quản lý Ghi danh");
-        JButton btnPromotion = new JButton("Quản lý Khuyến mãi");
-        JButton btnCertification = new JButton("Điểm & Chứng chỉ"); // THÊM NÚT MỚI
-        JButton btnReport = new JButton("Báo cáo Thống kê");
+        // Nút bấm với icon (Emoji)
+        JButton btnCourse = new JButton("📚 Khóa học");
+        JButton btnClass = new JButton("🏫 Lớp học");
+        JButton btnSchedule = new JButton("📅 Lịch học");
+        JButton btnAttendance = new JButton("✅ Điểm danh");
+        JButton btnTest = new JButton("📝 Đánh giá NL");
+        JButton btnEnrollment = new JButton("✍️ Ghi danh");
+        JButton btnCertification = new JButton("🎓 Điểm & CC");
+        JButton btnNotification = new JButton("🔔 Thông báo");
+        JButton btnStaff = new JButton("👥 Nhân viên");
+        JButton btnFacility = new JButton("🏗️ Cơ sở vật chất");
+        JButton btnProfile = new JButton("👤 Hồ sơ");
+        JButton btnPromotion = new JButton("🎁 Khuyến mãi");
+        JButton btnReport = new JButton("📊 Báo cáo");
 
-        // Bắt sự kiện chuyển trang
+        // Action Listeners
         btnCourse.addActionListener(e -> cardLayout.show(mainContentPanel, "COURSE"));
-        btnClas.addActionListener(e -> cardLayout.show(mainContentPanel, "CLASS"));
+        btnClass.addActionListener(e -> cardLayout.show(mainContentPanel, "CLASS"));
         btnSchedule.addActionListener(e -> cardLayout.show(mainContentPanel, "SCHEDULE"));
+        btnAttendance.addActionListener(e -> cardLayout.show(mainContentPanel, "ATTENDANCE"));
         btnTest.addActionListener(e -> cardLayout.show(mainContentPanel, "TEST"));
         btnEnrollment.addActionListener(e -> cardLayout.show(mainContentPanel, "ENROLLMENT"));
+        btnCertification.addActionListener(e -> cardLayout.show(mainContentPanel, "CERTIFICATION"));
+        btnNotification.addActionListener(e -> cardLayout.show(mainContentPanel, "NOTIFICATION"));
+        btnStaff.addActionListener(e -> cardLayout.show(mainContentPanel, "STAFF"));
+        btnFacility.addActionListener(e -> cardLayout.show(mainContentPanel, "FACILITY"));
+        btnProfile.addActionListener(e -> cardLayout.show(mainContentPanel, "PROFILE"));
         btnPromotion.addActionListener(e -> cardLayout.show(mainContentPanel, "PROMOTION"));
         btnReport.addActionListener(e -> cardLayout.show(mainContentPanel, "REPORT"));
 
-        // SỰ KIỆN CHO NÚT CHỨNG CHỈ
-        btnCertification.addActionListener(e -> cardLayout.show(mainContentPanel, "CERTIFICATION"));
-
-        // Thêm các nút vào menu
+        // Add to Menu
         sideMenu.add(btnCourse);
-        sideMenu.add(btnClas);
+        sideMenu.add(btnClass);
         sideMenu.add(btnSchedule);
+        sideMenu.add(btnAttendance);
         sideMenu.add(btnTest);
         sideMenu.add(btnEnrollment);
+        sideMenu.add(btnCertification);
+        sideMenu.add(new JSeparator());
+        sideMenu.add(btnStaff);
+        sideMenu.add(btnFacility);
+        sideMenu.add(btnProfile);
+        sideMenu.add(btnNotification);
+        sideMenu.add(new JSeparator());
         sideMenu.add(btnPromotion);
-        sideMenu.add(btnCertification); // THÊM NÚT VÀO MENU
         sideMenu.add(btnReport);
 
         setLayout(new BorderLayout());

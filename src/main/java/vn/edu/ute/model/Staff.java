@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import vn.edu.ute.common.enumeration.Role;
+import vn.edu.ute.common.enumeration.StaffRole;
 import vn.edu.ute.common.enumeration.Status;
 
 import java.time.LocalDateTime;
@@ -28,9 +29,9 @@ public class Staff {
     @Column(name = "full_name", nullable = false, length = 150)
     private String fullName;
 
-    @Column(name = "role", nullable = false)
+    @Column(name = "staff_role", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private StaffRole staffRole;
 
     @Column(name = "phone", length = 20)
     private String phone;
@@ -49,4 +50,7 @@ public class Staff {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "staff")
+    private UserAccount userAccount;
 }

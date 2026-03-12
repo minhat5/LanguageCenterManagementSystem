@@ -9,11 +9,11 @@ import vn.edu.ute.common.enumeration.ClassStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Getter
+@Setter
 @Table(name = "classes")
 public class Clas {
     @Id

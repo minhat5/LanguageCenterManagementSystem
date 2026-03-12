@@ -1,6 +1,8 @@
 package vn.edu.ute.service.impl;
 
 import vn.edu.ute.common.enumeration.Role;
+import vn.edu.ute.common.enumeration.Status;
+import vn.edu.ute.common.enumeration.Gender;
 import vn.edu.ute.common.util.PasswordUtil;
 import vn.edu.ute.db.TransactionManager;
 import vn.edu.ute.model.Student;
@@ -8,6 +10,9 @@ import vn.edu.ute.model.UserAccount;
 import vn.edu.ute.repo.StudentRepo;
 import vn.edu.ute.repo.UserAccountRepo;
 import vn.edu.ute.service.StudentService;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class StudentServiceImpl implements StudentService {
 
@@ -56,8 +61,9 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public java.util.List<Student> getAllStudents() throws Exception {
-        return txManager.runInTransaction(studentRepo::findAll);
+    public List<Student> getAllStudents() throws Exception {
+        // Sử dụng EntityManager từ transaction nếu repo yêu cầu
+        return txManager.runInTransaction(em -> studentRepo.findAll(em));
     }
 
     @Override
@@ -74,16 +80,21 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public java.util.List<Student> filterStudents(String keyword, vn.edu.ute.common.enumeration.Gender gender, vn.edu.ute.common.enumeration.Status status) throws Exception {
+    public List<Student> filterStudents(String keyword, Gender gender, Status status) throws Exception {
+        // Mở luồng (stream) từ danh sách sinh viên hiện có
         return getAllStudents().stream()
+                // Lọc (filter) từng phần tử theo các tiêu chí (từ khóa, giới tính, trạng thái)
                 .filter(s -> {
                     boolean matchKw = (keyword == null || keyword.trim().isEmpty()) ||
                             (s.getFullName() != null && s.getFullName().toLowerCase().contains(keyword.toLowerCase())) ||
                             (s.getPhone() != null && s.getPhone().contains(keyword));
+                    
                     boolean matchGen = (gender == null) || (s.getGender() == gender);
                     boolean matchSt = (status == null) || (s.getStatus() == status);
+                    
                     return matchKw && matchGen && matchSt;
                 })
-                .collect(java.util.stream.Collectors.toList());
+                // Gom nhóm (collect) kết quả lọc thành một danh sách (List) mới
+                .collect(Collectors.toList());
     }
 }

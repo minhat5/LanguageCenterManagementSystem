@@ -41,7 +41,7 @@ public class ClasServiceImpl implements ClasService {
         tx.runInTransaction(em -> {
             // Kiểm tra xem lớp học có tồn tại không trước khi cập nhật
             Clas existingClas = clasRepo.findById(em, clas.getClassId());
-            if(existingClas == null) {
+            if (existingClas == null) {
                 throw new IllegalArgumentException("Không tìm thấy lớp học với mã lớp học: " + clas.getClassId());
             }
             clasRepo.update(em, clas);
@@ -55,7 +55,7 @@ public class ClasServiceImpl implements ClasService {
         tx.runInTransaction(em -> {
             // Kiểm tra xem lớp học có tồn tại không trước khi xoá
             Clas existingClas = clasRepo.findById(em, id);
-            if(existingClas == null) {
+            if (existingClas == null) {
                 throw new IllegalArgumentException("Không tìm thấy lớp học với mã lớp học: " + id);
             }
             clasRepo.delete(em, id);
@@ -78,7 +78,9 @@ public class ClasServiceImpl implements ClasService {
     // Chuyển đổi danh sách lớp học sang danh sách ClasView để hiển thị thông tin
     @Override
     public List<ClasView> toClasView(List<Clas> classes) {
+        // Mở stream luồng dữ liệu từ danh sách lớp học
         return classes.stream()
+                // Map từng dữ liệu Lớp (Clas) thành dữ liệu View DTO (ClasView)
                 .map(c -> new ClasView(
                         c.getClassId(),
                         c.getClassName(),
@@ -91,36 +93,43 @@ public class ClasServiceImpl implements ClasService {
                         c.getMaxStudent(),
                         c.getStatus(),
                         c.getCreatedAt(),
-                        c.getUpdatedAt()
-                )).toList();
+                        c.getUpdatedAt()))
+                // Trả về danh sách được biến đổi về kiểu ClasView
+                .toList();
     }
 
     // Các phương thức lọc lớp học theo trạng thái, khoá học, chi nhánh hoặc tìm kiếm theo tên
     @Override
     public List<Clas> getClasViewsByStatus(List<Clas> classes, ClassStatus classStatus) {
+        // Xử lý stream lọc theo trạng thái của lớp
         return classes.stream()
-                .filter(c -> c.getStatus() == classStatus)
+                .filter(c -> c.getStatus() == classStatus) // Bộ lọc đánh giá điều kiện trạng thái
                 .toList();
     }
 
     @Override
     public List<Clas> getClasViewsByCourse(List<Clas> classes, Course course) {
+        // Dùng java stream để lọc thông tin
         return classes.stream()
+                // Giữ lại các lớp thuộc một khóa học nhất định
                 .filter(c -> c.getCourse() != null && c.getCourse().getCourseId().equals(course.getCourseId()))
                 .toList();
     }
 
     @Override
     public List<Clas> getClasViewsByBranch(List<Clas> classes, Branch branch) {
+        // Dùng java stream để lọc thông tin lớp có chi nhánh tương ứng
         return classes.stream()
-                .filter(c -> c.getTeacher() != null && c.getBranch().getBranchId().equals(branch.getBranchId()))
+                .filter(c -> c.getBranch() != null && c.getBranch().getBranchId().equals(branch.getBranchId()))
                 .toList();
     }
 
     @Override
     public List<Clas> findByName(List<Clas> classes, String name) {
         String searchName = name.toLowerCase().trim();
+        // Tạo luồng dữ liệu stream
         return classes.stream()
+                // Thực thi phép lọc bằng cách xét chứa (contains) chuỗi chữ thường
                 .filter(c -> c.getClassName().toLowerCase().contains(searchName))
                 .toList();
     }
@@ -129,7 +138,9 @@ public class ClasServiceImpl implements ClasService {
     @Override
     public List<Clas> getAllActiveClasses() throws Exception {
         List<Clas> allClasses = getAll();
+        // Khởi tạo luồng xử lý
         return allClasses.stream()
+                // Lọc loại bỏ lớp đã Hủy (Cancelled) hoặc Hoàn thành (Completed)
                 .filter(c -> c.getStatus() != ClassStatus.Cancelled && c.getStatus() != ClassStatus.Completed)
                 .toList();
     }

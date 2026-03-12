@@ -21,4 +21,7 @@ public class TransactionManager {
             em.close();
         }
     }
+    public void runInTransactionVoid(JpaWork<Void> work) throws Exception {
+        runInTransaction(work);
+    }
 }

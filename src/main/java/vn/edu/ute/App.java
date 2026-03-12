@@ -1,74 +1,71 @@
 package vn.edu.ute;
 
-import vn.edu.ute.db.TransactionManager;
-import vn.edu.ute.repo.*;
-import vn.edu.ute.repo.impl.*;
-
-// Import thêm các RepoImpl mới của bạn
-import vn.edu.ute.repo.impl.PlacementTestRepoImpl;
-import vn.edu.ute.repo.impl.EnrollmentRepoImpl;
-import vn.edu.ute.repo.impl.StudentRepoImpl;
-import vn.edu.ute.repo.impl.UserAccountRepoImpl;   // <-- Import thêm cho StudentService
-import vn.edu.ute.repo.impl.PromotionRepoImpl;
-import vn.edu.ute.repo.impl.ResultRepoImpl;
-import vn.edu.ute.repo.impl.CertificateRepoImpl;
-
-import vn.edu.ute.service.*;
-import vn.edu.ute.service.impl.*;
-import vn.edu.ute.ui.MainFrame;
+import vn.edu.ute.common.enumeration.Role;
+import vn.edu.ute.common.enumeration.StaffRole;
+import vn.edu.ute.common.enumeration.Status;
+import vn.edu.ute.common.factory.ServiceFactory;
+import vn.edu.ute.model.Staff;
 import vn.edu.ute.ui.UI;
+import vn.edu.ute.ui.LoginFrame;
 
 import javax.swing.*;
+import java.util.List;
 
 public class App {
+    public static final String RESET = "\u001B[0m";
+    public static final String GREEN = "\u001B[32m";
+    public static final String RED = "\u001B[31m";
+    public static final String CYAN = "\u001B[36m";
+    public static final String YELLOW = "\u001B[33m";
+
     public static void main(String[] args) {
         UI.initLookAndFeel();
-        TransactionManager tx = new TransactionManager();
 
-        ClasRepo classRepo = new ClasRepoImpl();
+        try {
+            System.out.println(YELLOW + "[*] Khởi tạo hệ thống toàn diện..." + RESET);
 
-        //Khởi tạo Repo cho Student và UserAccount
-        StudentRepo studentRepo = new StudentRepoImpl();
-        UserAccountRepo userAccountRepo = new UserAccountRepoImpl(); // <-- Thêm mới
+            // 1. Dependency Injection via ServiceFactory
+            ServiceFactory factory = ServiceFactory.getInstance();
 
-        //Các Repo của luồng Tuyển sinh & Khuyến mãi
-        PlacementTestRepo testRepo = new PlacementTestRepoImpl();
-        EnrollmentRepo enrollmentRepo = new EnrollmentRepoImpl();
-        PromotionRepo promotionRepo = new PromotionRepoImpl();
+            // 2. Kiểm tra & Tạo Admin mặc định
+            initDefaultAdmin(factory);
 
-        //Các Repo của luồng Điểm & Chứng chỉ
-        ResultRepo resultRepo = new ResultRepoImpl();
-        CertificateRepo certRepo = new CertificateRepoImpl();
-        //Repo báo cáo
-        PaymentRepo paymentRepo = new PaymentRepoImpl();
+            // 3. Khởi chạy Login UI
+            SwingUtilities.invokeLater(() -> {
+                LoginFrame loginFrame = new LoginFrame();
+                loginFrame.setVisible(true);
+            });
 
-        //Service cơ sở
-        ClasService classService = new ClasServiceImpl(classRepo, tx);
+        } catch (Exception e) {
+            System.out.println(RED + "[!] LỖI HỆ THỐNG: " + e.getMessage() + RESET);
+            e.printStackTrace();
+        }
+    }
 
-        // Khởi tạo StudentService truyền ĐÚNG 3 THAM SỐ như bạn đã thiết kế
-        StudentService studentService = new StudentServiceImpl(studentRepo, userAccountRepo, tx);
+    private static void initDefaultAdmin(ServiceFactory factory) {
+        try {
+            List<Staff> allStaff = factory.getStaffService().getAllStaffs();
 
-        //Service Tuyển sinh & Khuyến mãi
-        EnrollmentService enrollmentService = new EnrollmentServiceImpl(tx, testRepo, enrollmentRepo, classRepo, studentRepo);
-        PromotionService promotionService = new PromotionServiceImpl(tx, promotionRepo);
+            if (allStaff.isEmpty()) {
+                System.out.println(CYAN + "[*] Đang khởi tạo tài khoản Admin hệ thống..." + RESET);
 
-        //Service Điểm & Chứng chỉ
-        CertificationService certService = new CertificationServiceImpl(tx, resultRepo, certRepo);
+                Staff admin = new Staff();
+                admin.setFullName("Super Admin");
+                admin.setStaffRole(StaffRole.Manager);
+                admin.setStatus(Status.Active);
 
-        //Service báo cáo
-        ReportService reportService = new ReportServiceImpl(tx, paymentRepo, resultRepo);
+                factory.getStaffService().createStaffAccount(
+                        admin,
+                        "admin",
+                        "123456",
+                        Role.Admin
+                );
 
-        SwingUtilities.invokeLater(() -> {
-            // Bơm các service vào MainFrame
-            MainFrame frame = new MainFrame(
-                    enrollmentService,
-                    promotionService,
-                    certService,
-                    classService,
-                    studentService,
-                    reportService
-            );
-            frame.setVisible(true);
-        });
+                System.out.println(GREEN + "[+] Tạo Admin thành công!" + RESET);
+            }
+
+        } catch (Exception ex) {
+            System.err.println(RED + "[-] Lỗi DB Seed: " + ex.getMessage() + RESET);
+        }
     }
 }
