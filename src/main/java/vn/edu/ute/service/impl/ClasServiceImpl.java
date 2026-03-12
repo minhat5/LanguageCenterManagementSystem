@@ -98,8 +98,7 @@ public class ClasServiceImpl implements ClasService {
                 .toList();
     }
 
-    // Các phương thức lọc lớp học theo trạng thái, khoá học, chi nhánh hoặc tìm
-    // kiếm theo tên
+    // Các phương thức lọc lớp học theo trạng thái, khoá học, chi nhánh hoặc tìm kiếm theo tên
     @Override
     public List<Clas> getClasViewsByStatus(List<Clas> classes, ClassStatus classStatus) {
         // Xử lý stream lọc theo trạng thái của lớp
@@ -121,7 +120,7 @@ public class ClasServiceImpl implements ClasService {
     public List<Clas> getClasViewsByBranch(List<Clas> classes, Branch branch) {
         // Dùng java stream để lọc thông tin lớp có chi nhánh tương ứng
         return classes.stream()
-                .filter(c -> c.getTeacher() != null && c.getBranch().getBranchId().equals(branch.getBranchId()))
+                .filter(c -> c.getBranch() != null && c.getBranch().getBranchId().equals(branch.getBranchId()))
                 .toList();
     }
 

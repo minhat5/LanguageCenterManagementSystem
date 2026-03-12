@@ -27,13 +27,12 @@ public class App {
             // 1. Dependency Injection via ServiceFactory
             ServiceFactory factory = ServiceFactory.getInstance();
 
-            // 2. Kiểm tra & Tạo Admin mặc định (Duy trì logic của Admin-HR)
+            // 2. Kiểm tra & Tạo Admin mặc định
             initDefaultAdmin(factory);
 
-            // 3. Khởi chạy UI (Ưu tiên LoginFrame để bảo mật)
+            // 3. Khởi chạy Login UI
             SwingUtilities.invokeLater(() -> {
                 LoginFrame loginFrame = new LoginFrame();
-
                 loginFrame.setVisible(true);
             });
 
@@ -46,16 +45,25 @@ public class App {
     private static void initDefaultAdmin(ServiceFactory factory) {
         try {
             List<Staff> allStaff = factory.getStaffService().getAllStaffs();
+
             if (allStaff.isEmpty()) {
                 System.out.println(CYAN + "[*] Đang khởi tạo tài khoản Admin hệ thống..." + RESET);
+
                 Staff admin = new Staff();
                 admin.setFullName("Super Admin");
                 admin.setStaffRole(StaffRole.Manager);
                 admin.setStatus(Status.Active);
-                // System default Admin user role is Role.Admin
-                factory.getStaffService().createStaffAccount(admin, "admin", "123456", Role.Admin);
+
+                factory.getStaffService().createStaffAccount(
+                        admin,
+                        "admin",
+                        "123456",
+                        Role.Admin
+                );
+
                 System.out.println(GREEN + "[+] Tạo Admin thành công!" + RESET);
             }
+
         } catch (Exception ex) {
             System.err.println(RED + "[-] Lỗi DB Seed: " + ex.getMessage() + RESET);
         }
