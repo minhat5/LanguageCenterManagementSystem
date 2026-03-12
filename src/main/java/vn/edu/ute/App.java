@@ -25,37 +25,39 @@ public class App {
         UI.initLookAndFeel();
         TransactionManager tx = new TransactionManager();
 
-        // === KHỞI TẠO REPOSITORIES ===
         ClasRepo classRepo = new ClasRepoImpl();
 
-        // Khởi tạo Repo cho Student và UserAccount
+        //Khởi tạo Repo cho Student và UserAccount
         StudentRepo studentRepo = new StudentRepoImpl();
         UserAccountRepo userAccountRepo = new UserAccountRepoImpl(); // <-- Thêm mới
 
-        // Các Repo của luồng Tuyển sinh & Khuyến mãi
+        //Các Repo của luồng Tuyển sinh & Khuyến mãi
         PlacementTestRepo testRepo = new PlacementTestRepoImpl();
         EnrollmentRepo enrollmentRepo = new EnrollmentRepoImpl();
         PromotionRepo promotionRepo = new PromotionRepoImpl();
 
-        // Các Repo của luồng Điểm & Chứng chỉ
+        //Các Repo của luồng Điểm & Chứng chỉ
         ResultRepo resultRepo = new ResultRepoImpl();
         CertificateRepo certRepo = new CertificateRepoImpl();
+        //Repo báo cáo
+        PaymentRepo paymentRepo = new PaymentRepoImpl();
 
-        // === KHỞI TẠO SERVICES ===
-        // 1. Service cơ sở
+        //Service cơ sở
         ClasService classService = new ClasServiceImpl(classRepo, tx);
 
         // Khởi tạo StudentService truyền ĐÚNG 3 THAM SỐ như bạn đã thiết kế
         StudentService studentService = new StudentServiceImpl(studentRepo, userAccountRepo, tx);
 
-        // 2. Service Tuyển sinh & Khuyến mãi
+        //Service Tuyển sinh & Khuyến mãi
         EnrollmentService enrollmentService = new EnrollmentServiceImpl(tx, testRepo, enrollmentRepo, classRepo, studentRepo);
         PromotionService promotionService = new PromotionServiceImpl(tx, promotionRepo);
 
-        // 3. Service Điểm & Chứng chỉ
+        //Service Điểm & Chứng chỉ
         CertificationService certService = new CertificationServiceImpl(tx, resultRepo, certRepo);
 
-        // === KHỞI TẠO GIAO DIỆN CHÍNH ===
+        //Service báo cáo
+        ReportService reportService = new ReportServiceImpl(tx, paymentRepo, resultRepo);
+
         SwingUtilities.invokeLater(() -> {
             // Bơm các service vào MainFrame
             MainFrame frame = new MainFrame(
@@ -63,7 +65,8 @@ public class App {
                     promotionService,
                     certService,
                     classService,
-                    studentService
+                    studentService,
+                    reportService
             );
             frame.setVisible(true);
         });
