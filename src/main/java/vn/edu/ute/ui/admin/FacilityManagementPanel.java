@@ -1,4 +1,4 @@
-package vn.edu.ute.ui;
+package vn.edu.ute.ui.admin;
 
 import vn.edu.ute.common.enumeration.Status;
 import vn.edu.ute.model.Branch;

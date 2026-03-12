@@ -1,11 +1,11 @@
 package vn.edu.ute.repo.impl;
 
 import jakarta.persistence.EntityManager;
-import vn.edu.ute.repo.StaffRepository;
+import vn.edu.ute.repo.StaffRepo;
 
 import java.util.Optional;
 
-public class StaffRepositoryImpl implements StaffRepository {
+public class StaffRepoImpl implements StaffRepo {
 
     @Override
     public vn.edu.ute.model.Staff save(EntityManager em, vn.edu.ute.model.Staff staff) {

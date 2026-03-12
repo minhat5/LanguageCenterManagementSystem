@@ -1,11 +1,11 @@
 package vn.edu.ute.repo.impl;
 
 import jakarta.persistence.EntityManager;
-import vn.edu.ute.repo.UserAccountRepository;
+import vn.edu.ute.repo.UserAccountRepo;
 import vn.edu.ute.model.UserAccount;
 import java.util.Optional;
 
-public class UserAccountRepositoryImpl implements UserAccountRepository {
+public class UserAccountRepoImpl implements UserAccountRepo {
 
     @Override
     public Optional<vn.edu.ute.model.UserAccount> findByUsername(EntityManager em, String username) {

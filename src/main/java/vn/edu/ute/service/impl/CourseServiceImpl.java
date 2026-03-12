@@ -22,7 +22,7 @@ public class CourseServiceImpl implements CourseService {
 
     // Lấy tất cả khoá học
     @Override
-    public List<Course> getAll() throws Exception{
+    public List<Course> getAll() throws Exception {
         return tx.runInTransaction(courseRepository::findAll);
     }
 
@@ -37,7 +37,7 @@ public class CourseServiceImpl implements CourseService {
 
     // Xoá khoá học
     @Override
-    public void delete(Long id) throws Exception{
+    public void delete(Long id) throws Exception {
         tx.runInTransaction(em -> {
             // Kiểm tra xem khoá học có tồn tại không trước khi xoá
             Course course = courseRepository.findById(em, id);
@@ -55,7 +55,7 @@ public class CourseServiceImpl implements CourseService {
         tx.runInTransaction(em -> {
             // Kiểm tra xem khoá học có tồn tại không trước khi cập nhật
             Course existingCourse = courseRepository.findById(em, course.getCourseId());
-            if(existingCourse == null) {
+            if (existingCourse == null) {
                 throw new IllegalArgumentException("Không tìm thấy khoá học với mã khoá học: " + course.getCourseId());
             }
             courseRepository.update(em, course);
@@ -66,26 +66,34 @@ public class CourseServiceImpl implements CourseService {
     // Lọc khoá học theo trạng thái
     @Override
     public Map<Boolean, List<Course>> getCoursesByStatus(List<Course> courses) {
+        // Mở stream trên danh sách khoá học
         return courses.stream()
+                // Nhóm khoá học thành 2 phần: Khoá đang hoạt động (true) và Các khoá khác
+                // (false)
                 .collect(Collectors.partitioningBy(
-                        c -> c.getStatus() == Status.Active
-                ));
+                        c -> c.getStatus() == Status.Active));
     }
 
     // Tìm khoá học theo tên (tìm kiếm không phân biệt chữ hoa chữ thường)
     @Override
     public List<Course> findByName(List<Course> courses, String name) {
         String searchName = name.toLowerCase().trim();
+        // Tạo luồng dữ liệu
         return courses.stream()
+                // Dùng phương thức filter để lọc ra các khóa học có tên chứa từ khóa tìm kiếm
                 .filter(c -> c.getCourseName().toLowerCase().contains(searchName))
+                // Chuyển kết quả Stream trực tiếp sang cấu trúc List
                 .toList();
     }
 
     // Lọc khoá học theo cấp độ
     @Override
     public List<Course> getCoursesByLevel(List<Course> courses, Level level) {
+        // Tạo luồng dữ liệu stream
         return courses.stream()
+                // Lọc danh sách khoá học khớp với cấp độ được chỉ định
                 .filter(c -> c.getLevel() == level)
+                // Tập hợp kết quả lọc về lại một List
                 .toList();
     }
 

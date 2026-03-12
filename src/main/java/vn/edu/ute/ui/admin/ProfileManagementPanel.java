@@ -1,4 +1,4 @@
-package vn.edu.ute.ui;
+package vn.edu.ute.ui.admin;
 
 import vn.edu.ute.common.enumeration.Gender;
 import vn.edu.ute.common.enumeration.Status;

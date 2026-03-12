@@ -6,7 +6,7 @@ import vn.edu.ute.model.Student;
 import java.util.Optional;
 import java.util.List;
 
-public interface StudentRepository {
+public interface StudentRepo {
     Student save(EntityManager em, Student student);
     Optional<Student> findById(EntityManager em, Long id);
     boolean existsByEmail(EntityManager em, String email);

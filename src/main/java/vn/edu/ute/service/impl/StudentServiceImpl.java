@@ -5,17 +5,17 @@ import vn.edu.ute.common.util.PasswordUtil;
 import vn.edu.ute.db.TransactionManager;
 import vn.edu.ute.model.Student;
 import vn.edu.ute.model.UserAccount;
-import vn.edu.ute.repo.StudentRepository;
-import vn.edu.ute.repo.UserAccountRepository;
+import vn.edu.ute.repo.StudentRepo;
+import vn.edu.ute.repo.UserAccountRepo;
 import vn.edu.ute.service.StudentService;
 
 public class StudentServiceImpl implements StudentService {
 
-    private final StudentRepository studentRepo;
-    private final UserAccountRepository userAccountRepo;
+    private final StudentRepo studentRepo;
+    private final UserAccountRepo userAccountRepo;
     private final TransactionManager txManager;
 
-    public StudentServiceImpl(StudentRepository studentRepo, UserAccountRepository userAccountRepo, TransactionManager txManager) {
+    public StudentServiceImpl(StudentRepo studentRepo, UserAccountRepo userAccountRepo, TransactionManager txManager) {
         this.studentRepo = studentRepo;
         this.userAccountRepo = userAccountRepo;
         this.txManager = txManager;
@@ -47,10 +47,10 @@ public class StudentServiceImpl implements StudentService {
             account.setStudent(savedStudent);
 
             userAccountRepo.save(em, account);
-            
+
             // Link back mapping in memory just in case
             savedStudent.setUserAccount(account);
-            
+
             return savedStudent;
         });
     }
@@ -74,16 +74,21 @@ public class StudentServiceImpl implements StudentService {
     }
 
     @Override
-    public java.util.List<Student> filterStudents(String keyword, vn.edu.ute.common.enumeration.Gender gender, vn.edu.ute.common.enumeration.Status status) throws Exception {
+    public java.util.List<Student> filterStudents(String keyword, vn.edu.ute.common.enumeration.Gender gender,
+            vn.edu.ute.common.enumeration.Status status) throws Exception {
+        // Mở luồng (stream) từ danh sách sinh viên hiện có
         return getAllStudents().stream()
-            .filter(s -> {
-                boolean matchKw = (keyword == null || keyword.trim().isEmpty()) ||
-                                  (s.getFullName() != null && s.getFullName().toLowerCase().contains(keyword.toLowerCase())) ||
-                                  (s.getPhone() != null && s.getPhone().contains(keyword));
-                boolean matchGen = (gender == null) || (s.getGender() == gender);
-                boolean matchSt = (status == null) || (s.getStatus() == status);
-                return matchKw && matchGen && matchSt;
-            })
-            .collect(java.util.stream.Collectors.toList());
+                // Lọc (filter) từng phần tử theo các tiêu chí (từ khóa, giới tính, trạng thái)
+                .filter(s -> {
+                    boolean matchKw = (keyword == null || keyword.trim().isEmpty()) ||
+                            (s.getFullName() != null && s.getFullName().toLowerCase().contains(keyword.toLowerCase()))
+                            ||
+                            (s.getPhone() != null && s.getPhone().contains(keyword));
+                    boolean matchGen = (gender == null) || (s.getGender() == gender);
+                    boolean matchSt = (status == null) || (s.getStatus() == status);
+                    return matchKw && matchGen && matchSt;
+                })
+                // Gom nhóm (collect) kết quả lọc thành một danh sách (List) mới
+                .collect(java.util.stream.Collectors.toList());
     }
 }

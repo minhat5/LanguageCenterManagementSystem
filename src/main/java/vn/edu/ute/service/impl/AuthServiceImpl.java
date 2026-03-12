@@ -2,7 +2,7 @@ package vn.edu.ute.service.impl;
 
 import vn.edu.ute.db.TransactionManager;
 import vn.edu.ute.model.UserAccount;
-import vn.edu.ute.repo.UserAccountRepository;
+import vn.edu.ute.repo.UserAccountRepo;
 import vn.edu.ute.service.AuthService;
 import vn.edu.ute.common.util.PasswordUtil;
 import vn.edu.ute.common.enumeration.Role;
@@ -11,10 +11,10 @@ import java.util.Optional;
 
 public class AuthServiceImpl implements AuthService {
 
-    private final UserAccountRepository userAccountRepo;
+    private final UserAccountRepo userAccountRepo;
     private final TransactionManager txManager;
 
-    public AuthServiceImpl(UserAccountRepository userAccountRepo, TransactionManager txManager) {
+    public AuthServiceImpl(UserAccountRepo userAccountRepo, TransactionManager txManager) {
         this.userAccountRepo = userAccountRepo;
         this.txManager = txManager;
     }

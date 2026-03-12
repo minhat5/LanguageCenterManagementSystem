@@ -1,13 +1,10 @@
 package vn.edu.ute;
 
 import vn.edu.ute.common.enumeration.Role;
+import vn.edu.ute.common.enumeration.StaffRole;
 import vn.edu.ute.common.enumeration.Status;
-import vn.edu.ute.db.TransactionManager;
+import vn.edu.ute.common.factory.ServiceFactory;
 import vn.edu.ute.model.Staff;
-import vn.edu.ute.repo.*;
-import vn.edu.ute.repo.impl.*;
-import vn.edu.ute.service.*;
-import vn.edu.ute.service.impl.*;
 import vn.edu.ute.ui.UI;
 import vn.edu.ute.ui.LoginFrame;
 
@@ -26,61 +23,41 @@ public class App {
 
         try {
             System.out.println(YELLOW + "[*] Khởi tạo hệ thống toàn diện..." + RESET);
-            
-            // 1. Khởi tạo Manager & Repositories (Gộp cả 2 nhánh)
-            TransactionManager tx = new TransactionManager();
-            UserAccountRepositoryImpl userRepo = new UserAccountRepositoryImpl();
-            StaffRepositoryImpl staffRepo = new StaffRepositoryImpl();
-            StudentRepositoryImpl studentRepo = new StudentRepositoryImpl();
-            CourseRepo courseRepo = new CourseRepoImpl();
-            ClasRepo classRepo = new ClasRepoImpl();
-            TeacherRepo teacherRepo = new TeacherRepoImpl();
-            BranchRepo branchRepo = new BranchRepoImpl();
-            RoomRepo roomRepo = new RoomRepoImpl();
-            ScheduleRepo scheduleRepo = new ScheduleRepoImpl();
-            AttendanceRepo attendanceRepo = new AttendanceRepoImpl();
-            EnrollmentRepo enrollmentRepo = new EnrollmentRepoImpl();
 
-            // 2. Khởi tạo Services (Gộp cả 2 nhánh)
-            AuthService authService = new AuthServiceImpl(userRepo, tx);
-            StaffService staffService = new StaffServiceImpl(staffRepo, userRepo, tx);
-            StudentService studentService = new StudentServiceImpl(studentRepo, userRepo, tx);
-            CourseService courseService = new CourseServiceImpl(courseRepo, tx);
-            ClasService classService = new ClasServiceImpl(classRepo, tx);
-            TeacherService teacherService = new TeacherServiceImpl(teacherRepo, userRepo, tx);
-            BranchService branchService = new BranchServiceImpl(branchRepo, tx);
-            RoomService roomService = new RoomServiceImpl(roomRepo, tx);
-            ScheduleService scheduleService = new ScheduleServiceImpl(scheduleRepo, attendanceRepo, enrollmentRepo, tx);
-            AttendanceService attendanceService = new AttendanceServiceImpl(attendanceRepo, tx);
+            // 1. Dependency Injection via ServiceFactory
+            ServiceFactory factory = ServiceFactory.getInstance();
 
-            // 3. Kiểm tra & Tạo Admin mặc định (Duy trì logic của Admin-HR)
-            try {
-                List<Staff> allStaff = staffService.getAllStaffs();
-                if (allStaff.isEmpty()) {
-                    System.out.println(CYAN + "[*] Đang khởi tạo tài khoản Admin hệ thống..." + RESET);
-                    Staff admin = new Staff();
-                    admin.setFullName("Super Admin");
-                    admin.setRole(Role.Admin);
-                    admin.setStatus(Status.Active);
-                    staffService.createStaffAccount(admin, "admin", "123456");
-                    System.out.println(GREEN + "[+] Tạo Admin thành công!" + RESET);
-                }
-            } catch (Exception ex) {
-                System.err.println(RED + "[-] Lỗi DB Seed: " + ex.getMessage() + RESET);
-            }
+            // 2. Kiểm tra & Tạo Admin mặc định (Duy trì logic của Admin-HR)
+            initDefaultAdmin(factory);
 
-            // 4. Khởi chạy UI (Ưu tiên LoginFrame để bảo mật)
+            // 3. Khởi chạy UI (Ưu tiên LoginFrame để bảo mật)
             SwingUtilities.invokeLater(() -> {
-                LoginFrame loginFrame = new LoginFrame(
-                    authService, branchService, roomService, staffService, studentService, teacherService
-                );
-                // Lưu ý: Sau khi login thành công, bạn sẽ truyền các CourseService vào MainFrame sau.
+                LoginFrame loginFrame = new LoginFrame();
+
                 loginFrame.setVisible(true);
             });
 
         } catch (Exception e) {
             System.out.println(RED + "[!] LỖI HỆ THỐNG: " + e.getMessage() + RESET);
             e.printStackTrace();
+        }
+    }
+
+    private static void initDefaultAdmin(ServiceFactory factory) {
+        try {
+            List<Staff> allStaff = factory.getStaffService().getAllStaffs();
+            if (allStaff.isEmpty()) {
+                System.out.println(CYAN + "[*] Đang khởi tạo tài khoản Admin hệ thống..." + RESET);
+                Staff admin = new Staff();
+                admin.setFullName("Super Admin");
+                admin.setStaffRole(StaffRole.Manager);
+                admin.setStatus(Status.Active);
+                // System default Admin user role is Role.Admin
+                factory.getStaffService().createStaffAccount(admin, "admin", "123456", Role.Admin);
+                System.out.println(GREEN + "[+] Tạo Admin thành công!" + RESET);
+            }
+        } catch (Exception ex) {
+            System.err.println(RED + "[-] Lỗi DB Seed: " + ex.getMessage() + RESET);
         }
     }
 }

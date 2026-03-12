@@ -2,11 +2,11 @@ package vn.edu.ute.repo.impl;
 
 import jakarta.persistence.EntityManager;
 import vn.edu.ute.model.Student;
-import vn.edu.ute.repo.StudentRepository;
+import vn.edu.ute.repo.StudentRepo;
 import java.util.List;
 import java.util.Optional;
 
-public class StudentRepositoryImpl implements StudentRepository {
+public class StudentRepoImpl implements StudentRepo {
 
     @Override
     public Student save(EntityManager em, Student student) {
