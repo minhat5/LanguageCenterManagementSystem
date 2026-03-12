@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vn.edu.ute.enumeration.DiscountType;
-import vn.edu.ute.enumeration.Status;
+import vn.edu.ute.common.enumeration.DiscountType;
+import vn.edu.ute.common.enumeration.Status;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -1,6 +1,6 @@
 package vn.edu.ute.ui.enrollment;
 
-import vn.edu.ute.enumeration.EnrollmentStatus;
+import vn.edu.ute.common.enumeration.EnrollmentStatus;
 import vn.edu.ute.model.Clas;
 import vn.edu.ute.model.Enrollment;
 import vn.edu.ute.service.EnrollmentService;
@@ -258,7 +258,7 @@ public class EnrollmentPanel extends JPanel {
     class EnrollmentEditDialog extends JDialog {
         private final JComboBox<ClasItem> cboClasses = new JComboBox<>();
         private final JComboBox<EnrollmentStatus> cboStatus = new JComboBox<>();
-        private final JComboBox<vn.edu.ute.enumeration.Result> cboResult = new JComboBox<>();
+        private final JComboBox<vn.edu.ute.common.enumeration.Result> cboResult = new JComboBox<>();
         private boolean saved = false;
 
         public EnrollmentEditDialog(Frame owner, Enrollment existing, EnrollmentService service) {
@@ -303,7 +303,7 @@ public class EnrollmentPanel extends JPanel {
                 cboStatus.setSelectedItem(existing.getStatus());
 
                 // Tải Kết quả (Result)
-                for (vn.edu.ute.enumeration.Result r : vn.edu.ute.enumeration.Result.values()) {
+                for (vn.edu.ute.common.enumeration.Result r : vn.edu.ute.common.enumeration.Result.values()) {
                     cboResult.addItem(r);
                 }
                 cboResult.setSelectedItem(existing.getResult());
@@ -319,7 +319,7 @@ public class EnrollmentPanel extends JPanel {
                 try {
                     ClasItem selectedClass = (ClasItem) cboClasses.getSelectedItem();
                     EnrollmentStatus newStatus = (EnrollmentStatus) cboStatus.getSelectedItem();
-                    vn.edu.ute.enumeration.Result newResult = (vn.edu.ute.enumeration.Result) cboResult.getSelectedItem();
+                    vn.edu.ute.common.enumeration.Result newResult = (vn.edu.ute.common.enumeration.Result) cboResult.getSelectedItem();
 
                     if (selectedClass == null) throw new Exception("Vui lòng chọn lớp học!");
 

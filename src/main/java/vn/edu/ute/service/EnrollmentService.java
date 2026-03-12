@@ -1,7 +1,7 @@
 package vn.edu.ute.service;
 
-import vn.edu.ute.enumeration.EnrollmentStatus;
-import vn.edu.ute.enumeration.Result;
+import vn.edu.ute.common.enumeration.EnrollmentStatus;
+import vn.edu.ute.common.enumeration.Result;
 import vn.edu.ute.model.Clas;
 import vn.edu.ute.model.Enrollment;
 import vn.edu.ute.model.PlacementTest;

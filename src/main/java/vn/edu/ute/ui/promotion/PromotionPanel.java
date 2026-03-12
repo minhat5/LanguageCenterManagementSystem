@@ -1,6 +1,6 @@
 package vn.edu.ute.ui.promotion;
 
-import vn.edu.ute.enumeration.Status;
+import vn.edu.ute.common.enumeration.Status;
 import vn.edu.ute.model.Promotion;
 import vn.edu.ute.service.PromotionService;
 

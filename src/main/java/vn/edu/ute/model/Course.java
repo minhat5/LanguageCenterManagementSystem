@@ -6,9 +6,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import vn.edu.ute.enumeration.DurationUnit;
-import vn.edu.ute.enumeration.Level;
-import vn.edu.ute.enumeration.Status;
+import vn.edu.ute.common.enumeration.DurationUnit;
+import vn.edu.ute.common.enumeration.Level;
+import vn.edu.ute.common.enumeration.Status;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

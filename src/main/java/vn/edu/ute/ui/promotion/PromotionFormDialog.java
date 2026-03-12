@@ -1,8 +1,8 @@
 package vn.edu.ute.ui.promotion;
 
 import com.github.lgooddatepicker.components.DatePicker;
-import vn.edu.ute.enumeration.DiscountType;
-import vn.edu.ute.enumeration.Status;
+import vn.edu.ute.common.enumeration.DiscountType;
+import vn.edu.ute.common.enumeration.Status;
 import vn.edu.ute.model.Promotion;
 
 import javax.swing.*;

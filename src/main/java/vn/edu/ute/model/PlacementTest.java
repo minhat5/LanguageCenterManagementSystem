@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import vn.edu.ute.enumeration.Level;
+import vn.edu.ute.common.enumeration.Level;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
-import vn.edu.ute.enumeration.Status;
+import vn.edu.ute.common.enumeration.Status;
 
 import java.time.LocalDateTime;
 

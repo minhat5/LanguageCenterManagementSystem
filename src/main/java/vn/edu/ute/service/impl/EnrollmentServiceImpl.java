@@ -1,9 +1,9 @@
 package vn.edu.ute.service.impl;
 
 import vn.edu.ute.db.TransactionManager;
-import vn.edu.ute.enumeration.EnrollmentStatus;
-import vn.edu.ute.enumeration.Level;
-import vn.edu.ute.enumeration.Result;
+import vn.edu.ute.common.enumeration.EnrollmentStatus;
+import vn.edu.ute.common.enumeration.Level;
+import vn.edu.ute.common.enumeration.Result;
 import vn.edu.ute.model.Clas;
 import vn.edu.ute.model.Enrollment;
 import vn.edu.ute.model.PlacementTest;
@@ -38,7 +38,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
     @Override
     public void submitPlacementTest(Long studentId, BigDecimal score, String note) throws Exception {
         txManager.runInTransaction(em -> {
-            Student student = studentRepo.findById(em, studentId);
+            Student student = studentRepo.findById(em, studentId).orElse(null);
             if (student == null) throw new Exception("Không tìm thấy Học viên!");
 
             PlacementTest test = new PlacementTest();
@@ -80,7 +80,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
         txManager.runInTransaction(em -> {
             List<Enrollment> enrollments = enrollmentRepo.findAll(em);
             Clas targetClass = clasRepo.findById(em, classId);
-            Student targetStudent = studentRepo.findById(em, studentId);
+            Student targetStudent = studentRepo.findById(em, studentId).orElse(null);
 
             //Lambda kiểm tra học viên đã đăng ký chưa
             boolean isEnrolled = enrollments.stream()
