@@ -3,7 +3,9 @@ package vn.edu.ute.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import vn.edu.ute.common.enumeration.Status;
@@ -51,4 +53,9 @@ public class Teacher {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "teacher")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private UserAccount userAccount;
 }

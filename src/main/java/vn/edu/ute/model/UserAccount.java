@@ -1,4 +1,4 @@
-package vn.edu.ute.model;
+ package vn.edu.ute.model;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,6 +9,9 @@ import org.hibernate.annotations.UpdateTimestamp;
 import vn.edu.ute.common.enumeration.Role;
 
 import java.time.LocalDateTime;
+
+import lombok.ToString;
+import lombok.EqualsAndHashCode;
 
 @Data
 @NoArgsConstructor
@@ -33,14 +36,20 @@ public class UserAccount {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "teacher_id", unique=true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Teacher teacher;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", unique=true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Student student;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "staff_id", unique=true)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Staff staff;
 
     @Column(name = "is_active", nullable = false)

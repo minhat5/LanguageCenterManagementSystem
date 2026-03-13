@@ -3,10 +3,13 @@ package vn.edu.ute.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import vn.edu.ute.common.enumeration.Role;
+import vn.edu.ute.common.enumeration.StaffRole;
 import vn.edu.ute.common.enumeration.Status;
 
 import java.time.LocalDateTime;
@@ -30,7 +33,7 @@ public class Staff {
 
     @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role role;
+    private StaffRole staffRole;
 
     @Column(name = "phone", length = 20)
     private String phone;
@@ -49,4 +52,9 @@ public class Staff {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "staff")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private UserAccount userAccount;
 }

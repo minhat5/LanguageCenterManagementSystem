@@ -1,9 +1,7 @@
 package vn.edu.ute.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import vn.edu.ute.common.enumeration.ClassStatus;
@@ -11,10 +9,11 @@ import vn.edu.ute.common.enumeration.ClassStatus;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Getter
+@Setter
 @Table(name = "classes")
 public class Clas {
     @Id
