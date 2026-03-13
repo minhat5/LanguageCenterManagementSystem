@@ -125,8 +125,9 @@ public class SchedulePanel extends JPanel {
             cacheRooms = roomService.getAll();
 
             loadComboBoxes();
-
-            cboFilterClass.setSelectedIndex(0);
+            if(!cacheClasses.isEmpty()) {
+                cboFilterClass.setSelectedIndex(0);
+            }
             studyDateFilter.setText("");
             refreshTableByCurrentFilter();
         } catch(Exception e) {

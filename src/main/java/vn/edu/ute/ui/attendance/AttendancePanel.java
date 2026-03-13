@@ -118,8 +118,9 @@ public class AttendancePanel extends JPanel {
             cacheClasses = clasService.getAccessibleClass();
 
             loadComboBoxes();
-
-            cboFilterClass.setSelectedIndex(0);
+            if(!cacheClasses.isEmpty()) {
+                cboFilterClass.setSelectedIndex(0);
+            }
             studyDateFilter.setDateToToday();
             refreshTableByCurrentFilter();
         } catch(Exception e) {
