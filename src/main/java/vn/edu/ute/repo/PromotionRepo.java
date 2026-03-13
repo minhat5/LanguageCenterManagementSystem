@@ -11,4 +11,5 @@ public interface PromotionRepo {
     void delete(EntityManager em, Long promotionId);
     Promotion findById(EntityManager em, Long promotionId);
     List<Promotion> findAll(EntityManager em);
+    Promotion findByPromoName(EntityManager em, String promoName);
 }

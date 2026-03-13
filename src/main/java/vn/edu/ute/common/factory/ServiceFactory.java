@@ -30,6 +30,7 @@ public class ServiceFactory {
     private final CertificateRepo certificateRepo;
     private final ResultRepo resultRepo;
     private final PaymentRepo paymentRepo;
+    private final InvoiceRepo invoiceRepo;
 
     // --- SERVICES ---
     private final AuthService authService;
@@ -48,6 +49,7 @@ public class ServiceFactory {
     private final PromotionService promotionService;
     private final CertificationService certificationService;
     private final ReportService reportService;
+    private final StudentPaymentService studentPaymentService;
 
     private ServiceFactory() {
         this.txManager = new TransactionManager();
@@ -70,6 +72,7 @@ public class ServiceFactory {
         this.certificateRepo = new CertificateRepoImpl();
         this.resultRepo = new ResultRepoImpl();
         this.paymentRepo = new PaymentRepoImpl();
+        this.invoiceRepo = new InvoiceRepoImpl();
 
         // 2. Khởi tạo Services cơ bản
         this.authService = new AuthServiceImpl(userAccountRepo, txManager);
@@ -100,6 +103,8 @@ public class ServiceFactory {
 
         // ReportService tổng hợp dữ liệu từ các mảng khác nhau
         this.reportService = new ReportServiceImpl(txManager, paymentRepo, resultRepo);
+
+        this.studentPaymentService = new StudentPaymentServiceImpl(txManager, invoiceRepo, paymentRepo, promotionRepo);
     }
 
     public static synchronized ServiceFactory getInstance() {
@@ -127,4 +132,5 @@ public class ServiceFactory {
     public PromotionService getPromotionService() { return promotionService; }
     public CertificationService getCertificationService() { return certificationService; }
     public ReportService getReportService() { return reportService; }
+    public StudentPaymentService getStudentPaymentService() { return studentPaymentService; }
 }

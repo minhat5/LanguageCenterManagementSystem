@@ -31,7 +31,7 @@ public class Staff {
     @Column(name = "full_name", nullable = false, length = 150)
     private String fullName;
 
-    @Column(name = "staff_role", nullable = false)
+    @Column(name = "role", nullable = false)
     @Enumerated(EnumType.STRING)
     private StaffRole staffRole;
 

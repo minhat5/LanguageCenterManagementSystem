@@ -10,4 +10,5 @@ public interface InvoiceRepo {
     void update(EntityManager em, Invoice invoice);
     Invoice findById(EntityManager em, Long invoiceId);
     List<Invoice> findAll(EntityManager em);
+    List<Invoice> findByStudentId(EntityManager em, Long studentId);
 }

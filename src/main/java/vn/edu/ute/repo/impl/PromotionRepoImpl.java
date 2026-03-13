@@ -35,4 +35,14 @@ public class PromotionRepoImpl implements PromotionRepo {
     public List<Promotion> findAll(EntityManager em) {
         return em.createQuery("SELECT p FROM Promotion p ORDER BY p.promotionId DESC", Promotion.class).getResultList();
     }
+
+    @Override
+    public Promotion findByPromoName(EntityManager em, String promoName) {
+        try {
+            String jpql = "SELECT p FROM Promotion p WHERE p.promoName = :name";
+            return em.createQuery(jpql, Promotion.class).setParameter("name", promoName).getSingleResult();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

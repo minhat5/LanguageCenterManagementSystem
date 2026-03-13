@@ -12,6 +12,7 @@ import vn.edu.ute.service.EnrollmentService;
 import vn.edu.ute.service.ScheduleService;
 import vn.edu.ute.service.AttendanceService;
 import vn.edu.ute.service.CertificationService;
+import vn.edu.ute.service.StudentPaymentService;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -26,7 +27,7 @@ public class StudentPortalPanel extends JPanel {
     private final ScheduleService scheduleService;
     private final AttendanceService attendanceService;
     private final CertificationService certificationService;
-
+    private final StudentPaymentService studentPaymentService;
     // Models
     private DefaultTableModel enrollmentTableModel;
     private DefaultTableModel scheduleTableModel;
@@ -37,11 +38,13 @@ public class StudentPortalPanel extends JPanel {
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
     public StudentPortalPanel(EnrollmentService enrollmentService, ScheduleService scheduleService,
-                              AttendanceService attendanceService, CertificationService certificationService) {
+                              AttendanceService attendanceService, CertificationService certificationService,
+                              StudentPaymentService studentPaymentService) {
         this.enrollmentService = enrollmentService;
         this.scheduleService = scheduleService;
         this.attendanceService = attendanceService;
         this.certificationService = certificationService;
+        this.studentPaymentService = studentPaymentService;
 
         setLayout(new BorderLayout());
 
@@ -51,11 +54,15 @@ public class StudentPortalPanel extends JPanel {
         tabbedPane.addTab("Điểm danh", createAttendancePanel());
         tabbedPane.addTab("Kết quả học tập", createResultPanel());
 
+        StudentPaymentPanel paymentPanel = new StudentPaymentPanel(studentPaymentService);
+        tabbedPane.addTab("Thanh Toán Học Phí", paymentPanel);
+
         add(tabbedPane, BorderLayout.CENTER);
 
-        // Nút làm mới tổng thể gài dưới cùng
         JButton btnRefresh = new JButton("Làm mới dữ liệu");
-        btnRefresh.addActionListener(e -> loadAllData());
+        btnRefresh.addActionListener(e -> {
+            loadAllData();
+        });
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         bottomPanel.add(btnRefresh);
         add(bottomPanel, BorderLayout.SOUTH);
@@ -119,7 +126,7 @@ public class StudentPortalPanel extends JPanel {
         UserAccount currentUser = SessionManager.getCurrentUser();
         // Return blank if not a student
         if (currentUser == null || currentUser.getStudent() == null) return;
-        
+
         Long studentId = currentUser.getStudent().getStudentId();
 
         try {
@@ -133,7 +140,7 @@ public class StudentPortalPanel extends JPanel {
                 Clas c = e.getClas();
                 String teacherName = c.getTeacher() != null ? c.getTeacher().getFullName() : "Cần sắp xếp";
                 enrollmentTableModel.addRow(new Object[]{
-                    e.getEnrollmentId(), c.getClassName(), c.getCourse().getCourseName(), teacherName, e.getStatus().name()
+                        e.getEnrollmentId(), c.getClassName(), c.getCourse().getCourseName(), teacherName, e.getStatus().name()
                 });
             }
 
@@ -149,9 +156,9 @@ public class StudentPortalPanel extends JPanel {
             for (Schedule s : mySchedules) {
                 String room = s.getRoom() != null ? s.getRoom().getRoomName() : "N/A";
                 scheduleTableModel.addRow(new Object[]{
-                    s.getStudyDate().format(dateFormatter), 
-                    s.getStartTime().format(timeFormatter) + " - " + s.getEndTime().format(timeFormatter),
-                    s.getClas().getClassName(), room, s.getClas().getCourse().getCourseName()
+                        s.getStudyDate().format(dateFormatter),
+                        s.getStartTime().format(timeFormatter) + " - " + s.getEndTime().format(timeFormatter),
+                        s.getClas().getClassName(), room, s.getClas().getCourse().getCourseName()
                 });
             }
 
@@ -164,11 +171,11 @@ public class StudentPortalPanel extends JPanel {
             attendanceTableModel.setRowCount(0);
             for (Attendance a : myAttendances) {
                 attendanceTableModel.addRow(new Object[]{
-                    a.getAttendanceId(),
-                    a.getAttendDate().format(dateFormatter),
-                    a.getClas().getClassName(),
-                    a.getStatus().name(),
-                    a.getNote()
+                        a.getAttendanceId(),
+                        a.getAttendDate().format(dateFormatter),
+                        a.getClas().getClassName(),
+                        a.getStatus().name(),
+                        a.getNote()
                 });
             }
 
@@ -176,22 +183,22 @@ public class StudentPortalPanel extends JPanel {
             List<Result> myResults = certificationService.getAllResults().stream()
                     .filter(r -> r.getStudent().getStudentId().equals(studentId))
                     .collect(Collectors.toList());
-                    
+
             resultTableModel.setRowCount(0);
             for (Result r : myResults) {
                 // Check if certificate exists for this student and class
                 boolean hasCert = certificationService.getAllCertificates().stream()
-                        .anyMatch(cert -> cert.getStudent().getStudentId().equals(studentId) 
-                                && cert.getClas() != null 
+                        .anyMatch(cert -> cert.getStudent().getStudentId().equals(studentId)
+                                && cert.getClas() != null
                                 && cert.getClas().getClassId().equals(r.getClas().getClassId()));
-                
+
                 resultTableModel.addRow(new Object[]{
-                    r.getResultId(),
-                    r.getClas().getClassName(),
-                    r.getClas().getCourse().getCourseName(),
-                    r.getScore(),
-                    r.getGrade(),
-                    hasCert ? "Đã cấp chứng chỉ" : "Chưa cấp"
+                        r.getResultId(),
+                        r.getClas().getClassName(),
+                        r.getClas().getCourse().getCourseName(),
+                        r.getScore(),
+                        r.getGrade(),
+                        hasCert ? "Đã cấp chứng chỉ" : "Chưa cấp"
                 });
             }
 

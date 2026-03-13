@@ -14,6 +14,7 @@ import vn.edu.ute.ui.plamentTest.PlacementTestPanel;
 import vn.edu.ute.ui.promotion.PromotionPanel;
 import vn.edu.ute.ui.certification.CertificationPanel;
 import vn.edu.ute.ui.report.ReportPanel;
+import vn.edu.ute.ui.student.StudentPaymentPanel;
 import vn.edu.ute.ui.student.StudentPortalPanel;
 
 import javax.swing.*;
@@ -33,6 +34,7 @@ public class MainFrame extends JFrame {
     private FacilityManagementPanel facilityPanel;
     private ProfileManagementPanel profilePanel;
     private NotificationPanel notificationPanel;
+    private StudentPaymentPanel studentPaymentPanel;
 
     // Panel từ nhánh Report
     private PlacementTestPanel testPanel;
@@ -58,7 +60,8 @@ public class MainFrame extends JFrame {
         StaffService staffService = factory.getStaffService();
         StudentService studentService = factory.getStudentService();
         NotificationService notificationService = factory.getNotificationService();
-        
+        StudentPaymentService studentPaymentService = factory.getStudentPaymentService();
+
         // Các service cho nhánh Report (Đảm bảo ServiceFactory đã có các hàm này)
         EnrollmentService enrollmentService = factory.getEnrollmentService();
         PromotionService promotionService = factory.getPromotionService();
@@ -88,13 +91,14 @@ public class MainFrame extends JFrame {
         profilePanel = new ProfileManagementPanel(studentService, teacherService);
         notificationPanel = new NotificationPanel(notificationService);
 
+
         // Nhóm Nghiệp vụ & Báo cáo (Report)
         testPanel = new PlacementTestPanel(enrollmentService);
         enrollmentPanel = new EnrollmentPanel(enrollmentService);
         promotionPanel = new PromotionPanel(promotionService);
         certificationPanel = new CertificationPanel(certificationService, classService, studentService);
         reportPanel = new ReportPanel(reportService);
-        studentPortalPanel = new StudentPortalPanel(enrollmentService, scheduleService, attendanceService, certificationService);
+        studentPortalPanel = new StudentPortalPanel(enrollmentService, scheduleService, attendanceService, certificationService, studentPaymentService);
 
         // --- THÊM VÀO CARDLAYOUT ---
         mainContentPanel.add(coursePanel, "COURSE");

@@ -28,4 +28,10 @@ public class InvoiceRepoImpl implements InvoiceRepo {
         String jpql = "SELECT i FROM Invoice i JOIN FETCH i.student LEFT JOIN FETCH i.promotion ORDER BY i.issueDate DESC";
         return em.createQuery(jpql, Invoice.class).getResultList();
     }
+
+    @Override
+    public List<Invoice> findByStudentId(EntityManager em, Long studentId) {
+        String jpql = "SELECT i FROM Invoice i JOIN FETCH i.student LEFT JOIN FETCH i.promotion WHERE i.student.studentId = :sId ORDER BY i.issueDate DESC";
+        return em.createQuery(jpql, Invoice.class).setParameter("sId", studentId).getResultList();
+    }
 }
