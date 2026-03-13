@@ -136,6 +136,7 @@ public class MainFrame extends JFrame {
         JButton btnProfile = new JButton("👤 Hồ sơ");
         JButton btnPromotion = new JButton("🎁 Khuyến mãi");
         JButton btnReport = new JButton("📊 Báo cáo");
+        JButton btnLogout = new JButton("🚪 Đăng xuất");
 
         // Action Listeners
         btnStudentPortal.addActionListener(e -> cardLayout.show(mainContentPanel, "STUDENT_PORTAL"));
@@ -152,6 +153,15 @@ public class MainFrame extends JFrame {
         btnProfile.addActionListener(e -> cardLayout.show(mainContentPanel, "PROFILE"));
         btnPromotion.addActionListener(e -> cardLayout.show(mainContentPanel, "PROMOTION"));
         btnReport.addActionListener(e -> cardLayout.show(mainContentPanel, "REPORT"));
+
+        btnLogout.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(this, "Bạn có chắc chắn muốn đăng xuất?", "Xác nhận đăng xuất", JOptionPane.YES_NO_OPTION);
+            if (confirm == JOptionPane.YES_OPTION) {
+                vn.edu.ute.common.session.SessionManager.logout();
+                this.dispose();
+                new LoginFrame().setVisible(true);
+            }
+        });
 
         // Áp dụng Phân quyền để ẩn hiện Menu
         btnStudentPortal.setVisible(vn.edu.ute.common.policy.RolePolicy.canAccessStudentPortal());
@@ -186,6 +196,8 @@ public class MainFrame extends JFrame {
         sideMenu.add(new JSeparator());
         sideMenu.add(btnPromotion);
         sideMenu.add(btnReport);
+        sideMenu.add(new JSeparator());
+        sideMenu.add(btnLogout);
 
         setLayout(new BorderLayout());
         add(sideMenu, BorderLayout.WEST);
