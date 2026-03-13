@@ -121,7 +121,7 @@ public class SchedulePanel extends JPanel {
 
     private void reloadAll() {
         try {
-            cacheClasses = clasService.getAll();
+            cacheClasses = clasService.getAccessibleClass();
             cacheRooms = roomService.getAll();
 
             loadComboBoxes();
@@ -141,7 +141,7 @@ public class SchedulePanel extends JPanel {
 
             Clas clasFilter = (classObj instanceof Clas) ? (Clas) classObj : null;
 
-            schedules = scheduleService.getAll();
+            schedules = scheduleService.getAccessibleSchedule();
 
             if(clasFilter != null) {
                 schedules = scheduleService.getByClass(schedules, clasFilter);

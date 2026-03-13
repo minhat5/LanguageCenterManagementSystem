@@ -1,6 +1,8 @@
 package vn.edu.ute.service.impl;
 
 import vn.edu.ute.common.enumeration.AttendanceStatus;
+import vn.edu.ute.common.enumeration.Role;
+import vn.edu.ute.common.security.AuthContext;
 import vn.edu.ute.db.TransactionManager;
 import vn.edu.ute.dto.ScheduleView;
 import vn.edu.ute.model.*;
@@ -32,11 +34,23 @@ public class ScheduleServiceImpl implements ScheduleService {
     public List<Schedule> getAll() throws Exception {
         // Mở stream từ danh sách lịch học lấy được qua Transaction
         return tx.runInTransaction(scheduleRepo::findAll).stream()
-                // Sắp xếp (sorted) lịch học dựa trên tên lớp học (nhờ thuộc tính getClassName
-                // của Clas)
+                // Sắp xếp (sorted) lịch học dựa trên tên lớp học
                 .sorted(Comparator.comparing(s -> s.getClas().getClassName()))
                 // Chuyển kết quả sang List
                 .toList();
+    }
+
+    //Lấy tất cả lịch học theo quyền truy cập
+    @Override
+    public List<Schedule> getAccessibleSchedule() throws Exception {
+        if(AuthContext.hasRole(Role.Teacher)) {
+            Long teacherId = AuthContext.getCurrentUser().getTeacher().getTeacherId();
+            return getAll().stream()
+                    // Lọc dựa trên lớp học của lịch học trong đó có teacher id tương ứng
+                    .filter(s -> s.getClas() != null && s.getClas().getTeacher() != null && s.getClas().getTeacher().getTeacherId().equals(teacherId))
+                    .toList();
+        }
+        return getAll();
     }
 
     // Thêm lịch học mới đồng thời tạo điểm danh vắng mặt cho tất cả học viên của

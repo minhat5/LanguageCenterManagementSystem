@@ -1,6 +1,8 @@
 package vn.edu.ute.service.impl;
 
 import vn.edu.ute.common.enumeration.AttendanceStatus;
+import vn.edu.ute.common.enumeration.Role;
+import vn.edu.ute.common.security.AuthContext;
 import vn.edu.ute.db.TransactionManager;
 import vn.edu.ute.dto.AttendanceView;
 import vn.edu.ute.model.Attendance;
@@ -26,6 +28,18 @@ public class AttendanceServiceImpl implements AttendanceService {
     @Override
     public List<Attendance> getAll() throws Exception {
         return tx.runInTransaction(attendanceRepo::findAll);
+    }
+
+    //Lấy tất cả danh sách điểm danh theo quyền truy cập
+    @Override
+    public List<Attendance> getAccessibleAttendances() throws Exception {
+        if(AuthContext.hasRole(Role.Teacher)) {
+            return getAll().stream()
+                    // Lọc theo teacher id dựa vào lớp học của điểm danh có giáo viên trùng với giáo viên đang đăng nhập hay không
+                    .filter(a -> a.getClas().getTeacher() != null && a.getClas().getTeacher().getTeacherId().equals(AuthContext.getCurrentUser().getTeacher().getTeacherId()))
+                    .toList();
+        }
+        return getAll();
     }
 
     // Cập nhật điểm danh

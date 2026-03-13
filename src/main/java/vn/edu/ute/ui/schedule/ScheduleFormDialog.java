@@ -32,6 +32,8 @@ public class ScheduleFormDialog extends JDialog {
         setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
         buildUI();
         loadComboBoxes();
+
+        // Nếu đang sửa, điền sẵn thông tin vào form
         if(existing != null) {
             this.schedule = existing;
             cboClas.setSelectedItem(existing.getClas());
@@ -46,7 +48,7 @@ public class ScheduleFormDialog extends JDialog {
         pack();
         setLocationRelativeTo(owner);
     }
-
+    //Tải dữ liệu vào comboboxes
     private void loadComboBoxes() {
         try {
             for (Clas c : classes) {

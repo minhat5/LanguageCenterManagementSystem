@@ -47,7 +47,7 @@ public class MainFrame extends JFrame {
     private StudentPortalPanel studentPortalPanel;
 
     public MainFrame() {
-        // Sử dụng ServiceFactory để lấy tất cả các service (Tránh truyền tham số quá dài)
+        // Sử dụng ServiceFactory để lấy tất cả các service
         vn.edu.ute.common.factory.ServiceFactory factory = vn.edu.ute.common.factory.ServiceFactory.getInstance();
         
         CourseService courseService = factory.getCourseService();
@@ -62,7 +62,7 @@ public class MainFrame extends JFrame {
         NotificationService notificationService = factory.getNotificationService();
         StudentPaymentService studentPaymentService = factory.getStudentPaymentService();
 
-        // Các service cho nhánh Report (Đảm bảo ServiceFactory đã có các hàm này)
+        // Các service cho nhánh Report
         EnrollmentService enrollmentService = factory.getEnrollmentService();
         PromotionService promotionService = factory.getPromotionService();
         CertificationService certificationService = factory.getCertificationService();

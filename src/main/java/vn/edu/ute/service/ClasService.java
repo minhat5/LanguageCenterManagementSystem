@@ -20,4 +20,5 @@ public interface ClasService {
     List<Clas> getClasViewsByBranch(List<Clas> classes, Branch branch);
     List<Clas> findByName(List<Clas> classes, String name);
     List<Clas> getAllActiveClasses() throws Exception;
+    List<Clas> getAccessibleClass() throws Exception;
 }

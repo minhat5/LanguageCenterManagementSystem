@@ -19,4 +19,5 @@ public interface ScheduleService {
     void deleteUntilEndDate(Schedule schedule, List<Schedule> existingSchedules) throws Exception;
     List<ScheduleView> toScheduleView(List<Schedule> schedules);
     Schedule findById(Long id) throws Exception;
+    List<Schedule> getAccessibleSchedule() throws Exception;
 }

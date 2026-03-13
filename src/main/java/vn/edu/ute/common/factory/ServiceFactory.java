@@ -87,7 +87,7 @@ public class ServiceFactory {
         this.attendanceService = new AttendanceServiceImpl(attendanceRepo, txManager);
         this.notificationService = new NotificationServiceImpl(notificationRepo, txManager);
 
-        // 3. Khởi tạo Services nâng cao (Khớp với Constructor EnrollmentServiceImpl bạn đã gửi)
+        // 3. Khởi tạo Services nâng cao
         this.enrollmentService = new EnrollmentServiceImpl(
                 txManager,
                 placementTestRepo,

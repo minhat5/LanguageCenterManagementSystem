@@ -215,7 +215,7 @@ public class ClasPanel extends JPanel {
             Branch branchFilter = (branchObj instanceof Branch) ? (Branch) branchObj : null;
             ClassStatus statusFilter = (statusObj instanceof ClassStatus) ? (ClassStatus) statusObj : null;
 
-            classes = clasService.getAll();
+            classes = clasService.getAccessibleClass();
 
             if(courseFilter != null) {
                 classes = clasService.getClasViewsByCourse(classes, courseFilter);

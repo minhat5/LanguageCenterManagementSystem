@@ -115,7 +115,7 @@ public class AttendancePanel extends JPanel {
 
     private void reloadAll() {
         try {
-            cacheClasses = clasService.getAll();
+            cacheClasses = clasService.getAccessibleClass();
 
             loadComboBoxes();
 
@@ -134,7 +134,7 @@ public class AttendancePanel extends JPanel {
 
             Clas clasFilter = (classObj instanceof Clas) ? (Clas) classObj : null;
 
-            attendances = attendanceService.getAll();
+            attendances = attendanceService.getAccessibleAttendances();
 
             if(clasFilter != null) {
                 attendances = attendanceService.getByClass(attendances, clasFilter);

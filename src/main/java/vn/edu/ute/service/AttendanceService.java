@@ -17,4 +17,5 @@ public interface AttendanceService {
     List<Attendance> getByClass(List<Attendance> attendances, Clas clas);
     List<Attendance> getByAttendDate(List<Attendance> attendances, LocalDate attendDate);
     Map<AttendanceStatus, Long> countAttendanceByStatus(List<Attendance> attendances);
+    List<Attendance> getAccessibleAttendances() throws Exception;
 }

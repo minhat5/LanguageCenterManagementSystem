@@ -163,8 +163,6 @@ public class RegisterStudentFrame extends JFrame {
             newStudent.setEmail(email);
             newStudent.setRegistrationDate(LocalDate.now()); // Date now
             newStudent.setStatus(Status.Active);
-            // newStudent.setAddress(...)
-            // newStudent.setDateOfBirth(...)
             
             // Bước 2: Gọi Service chạy Transaction để lưu
             studentService.registerStudentAccount(newStudent, username, password);

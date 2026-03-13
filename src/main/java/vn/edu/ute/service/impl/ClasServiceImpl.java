@@ -1,6 +1,8 @@
 package vn.edu.ute.service.impl;
 
 import vn.edu.ute.common.enumeration.ClassStatus;
+import vn.edu.ute.common.enumeration.Role;
+import vn.edu.ute.common.security.AuthContext;
 import vn.edu.ute.db.TransactionManager;
 import vn.edu.ute.dto.ClasView;
 import vn.edu.ute.model.Branch;
@@ -24,6 +26,19 @@ public class ClasServiceImpl implements ClasService {
     @Override
     public List<Clas> getAll() throws Exception {
         return tx.runInTransaction(clasRepo::findAll);
+    }
+
+    //Lấy danh sách tất cả các lớp theo quyền truy cập
+    @Override
+    public List<Clas> getAccessibleClass() throws Exception {
+        if(AuthContext.hasRole(Role.Teacher)) {
+            Long teacherId = AuthContext.getCurrentUser().getTeacher().getTeacherId();
+            return getAll().stream()
+                    // Lọc theo teacher id trong class
+                    .filter(c -> c.getTeacher() != null && c.getTeacher().getTeacherId().equals(teacherId))
+                    .toList();
+        }
+        return getAll();
     }
 
     // Thêm lớp học mới
