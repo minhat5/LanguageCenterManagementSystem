@@ -79,7 +79,7 @@ public class MainFrame extends JFrame {
         // --- KHỞI TẠO CÁC PANEL ---
         
         // Nhóm Course & HR
-        clasPanel = new ClasPanel(classService, courseService, teacherService, branchService, roomService);
+        clasPanel = new ClasPanel(classService, courseService, teacherService, branchService, roomService, enrollmentService);
         coursePanel = new CoursePanel(courseService, selectedCourse -> {
             cardLayout.show(mainContentPanel, "CLASS");
             clasPanel.showAddDialog(selectedCourse);

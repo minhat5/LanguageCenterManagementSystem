@@ -187,4 +187,9 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             return null;
         });
     }
+
+    @Override
+    public List<Enrollment> getEnrollmentsByClassId(Long classId) throws Exception {
+        return txManager.runInTransaction(em -> enrollmentRepo.findByClassId(em, classId));
+    }
 }

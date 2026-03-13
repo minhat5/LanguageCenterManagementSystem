@@ -12,6 +12,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,7 @@ public class ClasPanel extends JPanel {
     private final TeacherService teacherService;
     private final BranchService branchService;
     private final RoomService roomService;
+    private final EnrollmentService enrollmentService;
 
     private final ClasTableModel tableModel = new ClasTableModel();
     private final JTable table = new JTable(tableModel);
@@ -39,12 +41,13 @@ public class ClasPanel extends JPanel {
     private List<Teacher> cacheTeachers = new ArrayList<>();
     private List<Room> cacheRooms = new ArrayList<>();
 
-    public ClasPanel(ClasService clasService, CourseService courseService, TeacherService teacherService, BranchService branchService, RoomService roomService) {
+    public ClasPanel(ClasService clasService, CourseService courseService, TeacherService teacherService, BranchService branchService, RoomService roomService, EnrollmentService enrollmentService) {
         this.clasService = clasService;
         this.courseService = courseService;
         this.teacherService = teacherService;
         this.branchService = branchService;
         this.roomService = roomService;
+        this.enrollmentService = enrollmentService;
 
         buildUI();
         reloadAll();
@@ -100,22 +103,27 @@ public class ClasPanel extends JPanel {
         JButton btnAdd = new JButton("Thêm");
         JButton btnEdit = new JButton("Sửa");
         JButton btnDelete = new JButton("Xoá");
+        JButton btnViewStudents = new JButton("Xem Học Viên");
         JButton btnRefresh = new JButton("Refresh");
 
         btnAdd.addActionListener(e -> onAdd());
         btnEdit.addActionListener(e -> onEdit());
         btnDelete.addActionListener(e -> onDelete());
+        btnViewStudents.addActionListener(e -> onViewStudents());
         btnRefresh.addActionListener(e -> reloadAll());
 
         boolean canEdit = vn.edu.ute.common.policy.RolePolicy.canEditCourseAndClass();
         btnAdd.setVisible(canEdit);
         btnEdit.setVisible(canEdit);
+        btnViewStudents.setVisible(canEdit);
         btnDelete.setVisible(canEdit);
+
 
         JPanel right = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         right.add(btnAdd);
         right.add(btnEdit);
         right.add(btnDelete);
+        right.add(btnViewStudents);
         right.add(btnRefresh);
         top.add(right, BorderLayout.EAST);
 
@@ -165,6 +173,16 @@ public class ClasPanel extends JPanel {
         } catch(Exception e) {
             JOptionPane.showMessageDialog(this, "Lỗi khi tải dữ liệu cho bộ lọc: " + e.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
         }
+    }
+
+    private void onViewStudents() {
+        if(selectedClass == null) {
+            JOptionPane.showMessageDialog(this, "Vui lòng chọn 1 lớp học để xem danh sách.", "Cảnh báo", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        Frame parent = (Frame) SwingUtilities.getWindowAncestor(this);
+        ClassStudentListDialog dlg = new ClassStudentListDialog(parent, selectedClass, enrollmentService);
+        dlg.setVisible(true);
     }
 
     private void reloadAll() {
@@ -297,6 +315,43 @@ public class ClasPanel extends JPanel {
             reloadAll();
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Lỗi khi xoá khoá học: " + ex.getMessage(), "Lỗi", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    class ClassStudentListDialog extends JDialog {
+        public ClassStudentListDialog(Frame owner, ClasView clasInfo, EnrollmentService enrollmentService) {
+            super(owner, "Danh sách học viên lớp: " + clasInfo.className(), true);
+            setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            setLayout(new BorderLayout(10, 10));
+            setSize(800, 500);
+            setLocationRelativeTo(owner);
+
+            String[] cols = {"Mã HV", "Tên Học Viên", "Giới Tính", "Số Điện Thoại", "Email", "Ngày Ghi Danh", "Trạng Thái"};
+            DefaultTableModel model = new DefaultTableModel(cols, 0) {
+                @Override public boolean isCellEditable(int row, int column) { return false; }
+            };
+            JTable table = new JTable(model);
+
+            // Đổ dữ liệu
+            try {
+                List<Enrollment> enrollments = enrollmentService.getEnrollmentsByClassId(clasInfo.classId());
+                for (Enrollment e : enrollments) {
+                    Student s = e.getStudent();
+                    model.addRow(new Object[]{
+                            s.getStudentId(), s.getFullName(), s.getGender(), s.getPhone(), s.getEmail(), e.getEnrollmentDate(), e.getStatus()
+                    });
+                }
+
+                JLabel lblCount = new JLabel("Tổng số: " + enrollments.size() + " / " + clasInfo.maxStudent() + " học viên");
+                lblCount.setFont(new Font("Arial", Font.BOLD, 14));
+                lblCount.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+                add(lblCount, BorderLayout.NORTH);
+                add(new JScrollPane(table), BorderLayout.CENTER);
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(owner, "Lỗi tải danh sách: " + ex.getMessage());
+            }
         }
     }
 }

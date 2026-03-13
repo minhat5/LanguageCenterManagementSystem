@@ -20,4 +20,5 @@ public interface EnrollmentService {
     void updateEnrollmentStatus(Long enrollmentId, EnrollmentStatus newStatus) throws Exception;
     List<Clas> getAllClasses() throws Exception;
     void updateEnrollment(Long enrollmentId, Long newClassId, EnrollmentStatus newStatus, Result newResult) throws Exception;
+    List<Enrollment> getEnrollmentsByClassId(Long classId) throws Exception;
 }
