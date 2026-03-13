@@ -1,12 +1,14 @@
 package vn.edu.ute.service.impl;
 
 import vn.edu.ute.common.enumeration.TargetRole;
+import vn.edu.ute.common.security.AuthContext;
 import vn.edu.ute.db.TransactionManager;
 import vn.edu.ute.model.Notification;
 import vn.edu.ute.model.UserAccount;
 import vn.edu.ute.repo.NotificationRepo;
 import vn.edu.ute.service.NotificationService;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class NotificationServiceImpl implements NotificationService {
@@ -47,7 +49,12 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<Notification> getNotificationsForRole(TargetRole targetRole) throws Exception {
-        return txManager.runInTransaction(em -> notificationRepo.findByTargetRole(em, targetRole));
+        LocalDateTime createdAccount = AuthContext.getCurrentUser().getCreatedAt();
+            // Lọc thông báo chỉ lấy những thông báo được tạo sau khi tài khoản được tạo
+        return txManager.runInTransaction(em -> notificationRepo.findByTargetRole(em, targetRole))
+                .stream()
+                .filter(n -> n.getCreatedAt().isAfter(createdAccount))
+                .toList();
     }
 
     @Override
