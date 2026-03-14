@@ -66,7 +66,14 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public Teacher updateTeacher(Teacher teacher) throws Exception {
-        return txManager.runInTransaction(em -> teacherRepo.save(em, teacher));
+        return txManager.runInTransaction(em -> {
+            Teacher updated = teacherRepo.save(em, teacher);
+            em.createQuery("UPDATE UserAccount u SET u.isActive = :isActive WHERE u.teacher = :teacher")
+              .setParameter("isActive", teacher.getStatus() == Status.Active)
+              .setParameter("teacher", updated)
+              .executeUpdate();
+            return updated;
+        });
     }
 
     @Override

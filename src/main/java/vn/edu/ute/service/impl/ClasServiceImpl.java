@@ -45,6 +45,15 @@ public class ClasServiceImpl implements ClasService {
     @Override
     public void insert(Clas clas) throws Exception {
         tx.runInTransaction(em -> {
+            if (clas.getCourse() != null && clas.getCourse().getStatus() == vn.edu.ute.common.enumeration.Status.Inactive) {
+                throw new Exception("Không thể tạo lớp học cho một khóa học đã ngưng hoạt động!");
+            }
+            if (clas.getBranch() != null && clas.getBranch().getStatus() == vn.edu.ute.common.enumeration.Status.Inactive) {
+                throw new Exception("Không thể tạo lớp học tại một chi nhánh đã ngưng hoạt động!");
+            }
+            if (clas.getTeacher() != null && clas.getTeacher().getStatus() == vn.edu.ute.common.enumeration.Status.Inactive) {
+                throw new Exception("Không thể gán một giáo viên đã nghỉ việc cho Lớp học!");
+            }
             clasRepo.insert(em, clas);
             return null;
         });
@@ -58,6 +67,15 @@ public class ClasServiceImpl implements ClasService {
             Clas existingClas = clasRepo.findById(em, clas.getClassId());
             if (existingClas == null) {
                 throw new IllegalArgumentException("Không tìm thấy lớp học với mã lớp học: " + clas.getClassId());
+            }
+            if (clas.getCourse() != null && clas.getCourse().getStatus() == vn.edu.ute.common.enumeration.Status.Inactive) {
+                throw new Exception("Không thể gán lớp học sang một khóa học đã ngưng hoạt động!");
+            }
+            if (clas.getBranch() != null && clas.getBranch().getStatus() == vn.edu.ute.common.enumeration.Status.Inactive) {
+                throw new Exception("Không thể gán lớp học sang một chi nhánh đã ngưng hoạt động!");
+            }
+            if (clas.getTeacher() != null && clas.getTeacher().getStatus() == vn.edu.ute.common.enumeration.Status.Inactive) {
+                throw new Exception("Không thể gán một giáo viên đã nghỉ việc cho Lớp học!");
             }
             clasRepo.update(em, clas);
             return null;

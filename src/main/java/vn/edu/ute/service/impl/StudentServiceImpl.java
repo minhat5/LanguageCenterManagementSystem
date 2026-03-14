@@ -68,7 +68,14 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public Student updateStudent(Student student) throws Exception {
-        return txManager.runInTransaction(em -> studentRepo.save(em, student));
+        return txManager.runInTransaction(em -> {
+            Student updated = studentRepo.save(em, student);
+            em.createQuery("UPDATE UserAccount u SET u.isActive = :isActive WHERE u.student = :student")
+              .setParameter("isActive", student.getStatus() == Status.Active)
+              .setParameter("student", updated)
+              .executeUpdate();
+            return updated;
+        });
     }
 
     @Override

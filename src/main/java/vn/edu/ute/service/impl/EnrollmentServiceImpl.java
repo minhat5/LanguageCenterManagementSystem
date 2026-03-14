@@ -82,6 +82,17 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             Clas targetClass = clasRepo.findById(em, classId);
             Student targetStudent = studentRepo.findById(em, studentId).orElse(null);
 
+            if (targetStudent == null) throw new Exception("Không tìm thấy học viên!");
+            if (targetClass == null) throw new Exception("Không tìm thấy lớp học!");
+
+            if (targetStudent.getStatus() == vn.edu.ute.common.enumeration.Status.Inactive) {
+                throw new Exception("Học viên đang tạm ngưng hoạt động, không thể ghi danh!");
+            }
+            if (targetClass.getStatus() == vn.edu.ute.common.enumeration.ClassStatus.Cancelled || 
+                targetClass.getStatus() == vn.edu.ute.common.enumeration.ClassStatus.Completed) {
+                throw new Exception("Lớp học này đã kết thúc hoặc bị hủy, không thể nhận thêm sinh viên!");
+            }
+
             //Lambda kiểm tra học viên đã đăng ký chưa
             boolean isEnrolled = enrollments.stream()
                     .anyMatch(e -> e.getStudent().getStudentId().equals(studentId)
@@ -175,6 +186,11 @@ public class EnrollmentServiceImpl implements EnrollmentService {
             if (!enrollment.getClas().getClassId().equals(newClassId)) {
                 Clas newClass = clasRepo.findById(em, newClassId);
                 if (newClass == null) throw new Exception("Không tìm thấy lớp học mới!");
+
+                if (newClass.getStatus() == vn.edu.ute.common.enumeration.ClassStatus.Cancelled || 
+                    newClass.getStatus() == vn.edu.ute.common.enumeration.ClassStatus.Completed) {
+                    throw new Exception("Lớp học mới này đã kết thúc hoặc bị hủy, không thể chuyển lớp!");
+                }
 
                 // Cập nhật lớp học mới
                 enrollment.setClas(newClass);

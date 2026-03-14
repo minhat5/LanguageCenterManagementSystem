@@ -56,7 +56,12 @@ public class StaffServiceImpl implements StaffService {
     @Override
     public Staff updateStaff(Staff staff) throws Exception {
         return txManager.runInTransaction(em -> {
-            return staffRepo.save(em, staff);
+            Staff updated = staffRepo.save(em, staff);
+            em.createQuery("UPDATE UserAccount u SET u.isActive = :isActive WHERE u.staff = :staff")
+              .setParameter("isActive", staff.getStatus() == vn.edu.ute.common.enumeration.Status.Active)
+              .setParameter("staff", updated)
+              .executeUpdate();
+            return updated;
         });
     }
 
