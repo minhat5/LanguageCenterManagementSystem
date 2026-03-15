@@ -1,0 +1,107 @@
+package vn.edu.ute.service.impl;
+
+import vn.edu.ute.common.enumeration.Role;
+import vn.edu.ute.common.enumeration.Status;
+import vn.edu.ute.common.enumeration.Gender;
+import vn.edu.ute.common.util.PasswordUtil;
+import vn.edu.ute.db.TransactionManager;
+import vn.edu.ute.model.Student;
+import vn.edu.ute.model.UserAccount;
+import vn.edu.ute.repo.StudentRepo;
+import vn.edu.ute.repo.UserAccountRepo;
+import vn.edu.ute.service.StudentService;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class StudentServiceImpl implements StudentService {
+
+    private final StudentRepo studentRepo;
+    private final UserAccountRepo userAccountRepo;
+    private final TransactionManager txManager;
+
+    public StudentServiceImpl(StudentRepo studentRepo, UserAccountRepo userAccountRepo, TransactionManager txManager) {
+        this.studentRepo = studentRepo;
+        this.userAccountRepo = userAccountRepo;
+        this.txManager = txManager;
+    }
+
+    @Override
+    public Student registerStudentAccount(Student studentInfo, String username, String password) throws Exception {
+        return txManager.runInTransaction(em -> {
+            // 1. Kiểm tra tồn tại (Email, Phone, Username)
+            if (studentRepo.existsByEmail(em, studentInfo.getEmail())) {
+                throw new Exception("Email sinh viên đã tồn tại: " + studentInfo.getEmail());
+            }
+            if (studentRepo.existsByPhone(em, studentInfo.getPhone())) {
+                throw new Exception("Số điện thoại sinh viên đã tồn tại: " + studentInfo.getPhone());
+            }
+            if (userAccountRepo.existsByUsername(em, username)) {
+                throw new Exception("Tên đăng nhập đã tồn tại: " + username);
+            }
+
+            // 2. Lưu hồ sơ Student
+            Student savedStudent = studentRepo.save(em, studentInfo);
+
+            // 3. Khởi tạo tài khoản UserAccount map với Student
+            UserAccount account = new UserAccount();
+            account.setUsername(username);
+            account.setPasswordHash(PasswordUtil.hashPassword(password));
+            account.setRole(Role.Student);
+            account.setIsActive(true);
+            account.setStudent(savedStudent);
+
+            userAccountRepo.save(em, account);
+
+            // Link back mapping in memory just in case
+            savedStudent.setUserAccount(account);
+
+            return savedStudent;
+        });
+    }
+
+    @Override
+    public List<Student> getAllStudents() throws Exception {
+        // Sử dụng EntityManager từ transaction nếu repo yêu cầu
+        return txManager.runInTransaction(em -> studentRepo.findAll(em));
+    }
+
+    @Override
+    public Student updateStudent(Student student) throws Exception {
+        return txManager.runInTransaction(em -> {
+            Student updated = studentRepo.save(em, student);
+            em.createQuery("UPDATE UserAccount u SET u.isActive = :isActive WHERE u.student = :student")
+              .setParameter("isActive", student.getStatus() == Status.Active)
+              .setParameter("student", updated)
+              .executeUpdate();
+            return updated;
+        });
+    }
+
+    @Override
+    public void deleteStudent(Long id) throws Exception {
+        txManager.runInTransaction(em -> {
+            studentRepo.deleteById(em, id);
+            return null;
+        });
+    }
+
+    @Override
+    public List<Student> filterStudents(String keyword, Gender gender, Status status) throws Exception {
+        // Mở luồng (stream) từ danh sách sinh viên hiện có
+        return getAllStudents().stream()
+                // Lọc (filter) từng phần tử theo các tiêu chí (từ khóa, giới tính, trạng thái)
+                .filter(s -> {
+                    boolean matchKw = (keyword == null || keyword.trim().isEmpty()) ||
+                            (s.getFullName() != null && s.getFullName().toLowerCase().contains(keyword.toLowerCase())) ||
+                            (s.getPhone() != null && s.getPhone().contains(keyword));
+                    
+                    boolean matchGen = (gender == null) || (s.getGender() == gender);
+                    boolean matchSt = (status == null) || (s.getStatus() == status);
+                    
+                    return matchKw && matchGen && matchSt;
+                })
+                // Gom nhóm (collect) kết quả lọc thành một danh sách (List) mới
+                .collect(Collectors.toList());
+    }
+}
