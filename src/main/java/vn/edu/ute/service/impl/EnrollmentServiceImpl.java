@@ -65,12 +65,17 @@ public class EnrollmentServiceImpl implements EnrollmentService {
                 .orElseThrow(() -> new Exception("Học viên chưa có bài thi!"));
         Level targetLevel = bestTest.getSuggestedLevel();
         List<Clas> allClasses = clasRepo.findAll(em);
+        List<Enrollment> enrollments = enrollmentRepo.findAll(em);
         //Lamdas Stream lọc danh sách phù hợp với trình độ và trạng thái
         return allClasses.stream()
                 // Lọc lớp đang mở
                 .filter(c -> c.getStatus() == vn.edu.ute.common.enumeration.ClassStatus.Open || c.getStatus() == vn.edu.ute.common.enumeration.ClassStatus.Planned)
                 // Lọc lớp có Level khớp với bài test
                 .filter(c -> c.getCourse() != null && c.getCourse().getLevel() == targetLevel)
+                // lớp chưa đầy
+                .filter(c -> enrollments.stream()
+                        .filter(e -> e.getClas().getClassId().equals(c.getClassId()))
+                        .count() < c.getMaxStudent())
                 .collect(Collectors.toList());
         });
     }
